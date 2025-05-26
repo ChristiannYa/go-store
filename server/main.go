@@ -1,0 +1,35 @@
+package main
+
+import (
+	"log"
+	"net/http"
+
+	"go-auth/server/config"
+	"go-auth/server/routes"
+	"go-auth/server/utils"
+
+	"github.com/joho/godotenv"
+)
+
+func main() {
+	if err := godotenv.Load(); err != nil {
+		log.Println("🟡 no .env file found")
+	}
+
+	config.ConnectDB()
+	defer config.CloseDB()
+
+	// Setup routes
+	mux := http.NewServeMux()
+	routes.SetupRoutes(mux)
+
+	// Setup CORS and wrap router
+	corsHandler := config.SetupCORS()
+	handler := corsHandler.Handler(mux)
+
+	// Setup graceful shutdown
+	utils.SetupGracefulShutdown()
+
+	log.Println("🚀 Server starting on :8080")
+	log.Fatal(http.ListenAndServe(":8080", handler))
+}

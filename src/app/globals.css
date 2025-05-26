@@ -3,19 +3,45 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0a0a0a;
+  --foreground: #ededed;
 }
 
+/*
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
   }
 }
+*/
 
 body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.page {
+  @apply font-mono min-h-dvh py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center;
+}
+
+.link-slate-500 {
+  @apply text-lg text-slate-500 hover:text-slate-300 cursor-pointer;
+}
+
+.form__label {
+  @apply font-medium text-gray-500 mb-1;
+}
+
+.form__input {
+  @apply bg-gray-800 rounded-md placeholder:opacity-25 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full px-3 py-2;
+}
+
+.form__input--password-toggle {
+  @apply rounded-full w-7 h-7 transform -translate-y-1/2 text-slate-500 hover:text-slate-300 flex justify-center items-center absolute right-3 top-1/2;
+}
+
+.form__input--error {
+  @apply text-sm text-red-600 mt-1;
 }
