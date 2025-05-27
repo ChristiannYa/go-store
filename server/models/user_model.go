@@ -34,7 +34,14 @@ type RegisterRequest struct {
 }
 
 type AuthResponse struct {
-	Success bool              `json:"success"`
-	Message string            `json:"message,omitempty"`
-	Errors  map[string]string `json:"errors,omitempty"`
+	Success     bool              `json:"success"`
+	Message     string            `json:"message,omitempty"`
+	Errors      map[string]string `json:"errors,omitempty"`
+	AccessToken string            `json:"accessToken,omitempty"`
+}
+
+type UserMeResponse struct {
+	IsLoggedIn  bool   `json:"isLoggedIn"`
+	User        *User  `json:"user,omitempty"`
+	AccessToken string `json:"accessToken,omitempty"`
 }

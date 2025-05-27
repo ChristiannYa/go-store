@@ -12,11 +12,6 @@ import (
 // Create a global variable for the database connection
 var DB *sql.DB
 
-// Table name constants
-const (
-	UsersTable = "users"
-)
-
 type DBConfig struct {
 	Host     string
 	Port     string

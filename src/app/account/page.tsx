@@ -1,6 +1,6 @@
 "use client";
 
-import HomeButton from "@/app/components/HomeButton";
+import HomeButton from "@/components/HomeButton";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function Page() {

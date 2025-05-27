@@ -32,6 +32,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userService := services.NewUserService(config.DB)
+	tokenService := services.NewTokenService(config.DB)
 
 	// Get user details: id, email, and password hash
 	user, err := userService.SelectUserLoginDetails(req.Email)
@@ -60,18 +61,34 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Create session
-	if err := utils.CreateSession(w, user.ID); err != nil {
+	// Generate access token
+	accessToken, err := tokenService.GenerateAccessToken(user.ID)
+	if err != nil {
 		writeErrorResponse(w, http.StatusInternalServerError, map[string]string{
-			"form": "An error occurred during login",
+			"form": "Failed to generate access token",
 		})
 		return
 	}
 
+	// Generate refresh token
+	deviceInfo := r.Header.Get("User-Agent")
+	ipAddress := utils.GetClientIP(r)
+	refreshToken, err := tokenService.GenerateRefreshToken(user.ID, deviceInfo, ipAddress)
+	if err != nil {
+		writeErrorResponse(w, http.StatusInternalServerError, map[string]string{
+			"form": "Failed to generate refresh token",
+		})
+		return
+	}
+
+	// Set refresh token as HTTP-only cookie
+	tokenService.SetRefreshTokenCookie(w, refreshToken)
+
 	// Success response
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(models.AuthResponse{
-		Success: true,
-		Message: "Login successful",
+		Success:     true,
+		Message:     "Login successful",
+		AccessToken: accessToken,
 	})
 }

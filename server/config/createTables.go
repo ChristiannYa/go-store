@@ -5,6 +5,11 @@ import (
 	"log"
 )
 
+const (
+	UsersTable         = "users"
+	RefreshTokensTable = "refresh_tokens"
+)
+
 // CreateTables creates all application tables
 func CreateTables() {
 	tables := map[string]string{
@@ -20,6 +25,18 @@ func CreateTables() {
 				created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 				updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 			);
+		`,
+		RefreshTokensTable: `
+			CREATE TABLE IF NOT EXISTS %s (
+				id SERIAL PRIMARY KEY,
+				user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+				token_hash VARCHAR(255) NOT NULL,
+				expires_at TIMESTAMP NOT NULL,
+				created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+				is_revoked BOOLEAN DEFAULT FALSE,
+				device_info VARCHAR(255),
+				ip_address INET
+			)
 		`,
 	}
 

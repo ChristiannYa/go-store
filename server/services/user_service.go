@@ -79,8 +79,8 @@ func (s *UserService) SelectUserLoginDetails(email string) (*models.UserLogin, e
 	return &user, nil
 }
 
-// Select user by ID
-func (s *UserService) SelectUserByID(userID int) (*models.User, error) {
+// Get user by ID
+func (s *UserService) GetUserByID(userID int) (*models.User, error) {
 	query := `
 		SELECT 
 		id, 

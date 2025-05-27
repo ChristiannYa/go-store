@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/router";
 import { LoginFormData, AuthResponse } from "@/app/definitions";
+import { useAuth } from "@/contexts/AuthContext";
 
 export function useLoginForm() {
   const [formData, setFormData] = useState<LoginFormData>({
@@ -11,6 +13,8 @@ export function useLoginForm() {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
+  const { login } = useAuth();
+  const router = useRouter();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -43,12 +47,10 @@ export function useLoginForm() {
       const data: AuthResponse = await response.json();
 
       if (data.success && data.accessToken) {
-        // TODO: Store access token in auth context instead
-        // of redirecting immediately
-        // For now, we'll still redirect but this will change
-        // when implemening AuthProvider
-        console.log("Access token:", data.accessToken);
-        window.location.href = "/";
+        // Store the access token in the context
+        login(data.accessToken);
+
+        router.push("/");
       } else if (data.errors) {
         setErrors(data.errors);
       } else {

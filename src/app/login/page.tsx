@@ -1,5 +1,5 @@
 import LoginForm from "./LoginForm";
-import HomeButton from "@/app/components/HomeButton";
+import HomeButton from "@/components/HomeButton";
 
 export default function RegisterPage() {
   return (

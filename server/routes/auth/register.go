@@ -30,6 +30,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userService := services.NewUserService(config.DB)
+	tokenService := services.NewTokenService(config.DB)
 
 	// Check if user already exists
 	userExists, err := userService.UserEmailExists(req.Email)
@@ -56,18 +57,34 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Create session
-	if err := utils.CreateSession(w, userID); err != nil {
+	// Generate access token
+	accessToken, err := tokenService.GenerateAccessToken(userID)
+	if err != nil {
 		writeErrorResponse(w, http.StatusInternalServerError, map[string]string{
-			"form": "Failed to create session",
+			"form": "Failed to generate access token",
 		})
 		return
 	}
 
+	// Generate refresh token
+	deviceInfo := r.Header.Get("User-Agent")
+	ipAddress := utils.GetClientIP(r)
+	refreshToken, err := tokenService.GenerateRefreshToken(userID, deviceInfo, ipAddress)
+	if err != nil {
+		writeErrorResponse(w, http.StatusInternalServerError, map[string]string{
+			"form": "Failed to generate refresh token",
+		})
+		return
+	}
+
+	// Set refresh token as HTTP-only cookie
+	tokenService.SetRefreshTokenCookie(w, refreshToken)
+
 	// Success response
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(models.AuthResponse{
-		Success: true,
-		Message: "Registration successful",
+		Success:     true,
+		Message:     "Registration successful",
+		AccessToken: accessToken,
 	})
 }
