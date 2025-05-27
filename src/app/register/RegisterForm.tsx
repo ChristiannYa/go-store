@@ -13,10 +13,10 @@ export default function RegisterForm() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="form">
       {/* Form-level errors */}
       {errors.form && (
-        <div className="bg-red-300 border-red-400 text-red-700 px-3.5 py-2.5 rounded">
+        <div className="form__popup--error__container">
           <p>{errors.form}</p>
         </div>
       )}
@@ -142,9 +142,13 @@ export default function RegisterForm() {
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full py-2 px-4 rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+        className={`rounded-md bg-blue-600 text-white w-full py-2 px-4 ${
+          isLoading
+            ? "cursor-default opacity-40"
+            : "hover:bg-blue-700 cursor-pointer"
+        }`}
       >
-        {isLoading ? "Signing up..." : "Sign up"}
+        {isLoading ? "Loading..." : "Register"}
       </button>
     </form>
   );

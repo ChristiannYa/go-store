@@ -24,13 +24,27 @@ func (s *UserService) CreateUser(req *models.RegisterRequest) (int, error) {
 	}
 
 	insertUserQuery := `
-		INSERT INTO users (name, last_name, email, password_hash, created_at, updated_at)
+		INSERT INTO users (
+			name, 
+			last_name, 
+			email, 
+			password_hash, 
+			created_at, 
+		updated_at)
 		VALUES ($1, $2, $3, $4, $5, $6)
 		RETURNING id
 	`
 	now := time.Now()
 	var userID int
-	err = s.db.QueryRow(insertUserQuery, req.Name, req.LastName, req.Email, string(hashedPassword), now, now).Scan(&userID)
+	err = s.db.QueryRow(
+		insertUserQuery,
+		req.Name,
+		req.LastName,
+		req.Email,
+		string(hashedPassword),
+		now,
+		now,
+	).Scan(&userID)
 	if err != nil {
 		return 0, fmt.Errorf("failed to create user: %w", err)
 	}
@@ -49,4 +63,48 @@ func (s *UserService) UserEmailExists(email string) (bool, error) {
 	}
 
 	return exists, nil
+}
+
+// Select user login details by email
+func (s *UserService) SelectUserLoginDetails(email string) (*models.UserLogin, error) {
+	query := `SELECT id, email, password_hash FROM users WHERE email = $1`
+	var user models.UserLogin
+	err := s.db.QueryRow(query, email).Scan(&user.ID, &user.Email, &user.PasswordHash)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil // User not found
+		}
+		return nil, fmt.Errorf("failed to select user by email: %w", err)
+	}
+	return &user, nil
+}
+
+// Select user by ID
+func (s *UserService) SelectUserByID(userID int) (*models.User, error) {
+	query := `
+		SELECT 
+		id, 
+		name, 
+		last_name, 
+		email, 
+		created_at, 
+		updated_at 
+		FROM users WHERE id = $1
+	`
+	var user models.User
+	err := s.db.QueryRow(query, userID).Scan(
+		&user.ID,
+		&user.Name,
+		&user.LastName,
+		&user.Email,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil // User not found
+		}
+		return nil, fmt.Errorf("failed to select user by ID: %w", err)
+	}
+	return &user, nil
 }

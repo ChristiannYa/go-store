@@ -1,3 +1,4 @@
+/* -- Authentication -- */
 export interface RegisterFormData {
   name: string;
   last_name: string;
@@ -6,16 +7,36 @@ export interface RegisterFormData {
   confirm_password: string;
 }
 
-// Has to match the backend `models.RegisterResponse`
-export interface RegisterResponse {
+export interface LoginFormData {
+  email: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  // Has to match the backend `models.AuthResponse`
   success: boolean;
   message?: string;
   errors?: Record<string, string>;
 }
 
-export interface PasswordRequirement {
-  id: string;
-  label: string;
-  met: boolean;
-  required: boolean;
-}
+export type AuthResult = {
+  isAuthenticated: boolean;
+  userId?: number;
+};
+
+export type CookieAccessor = {
+  get: (name: string) => { value: string } | undefined;
+};
+
+export type User = {
+  id: number;
+  name: string;
+  last_name: string;
+  email: string;
+  created_at: string;
+};
+
+export type AuthData = {
+  isLoggedIn: boolean;
+  user?: User;
+};

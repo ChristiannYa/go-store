@@ -12,21 +12,11 @@ import (
 func Register(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	// Check if method is POST
-	if r.Method != http.MethodPost {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		json.NewEncoder(w).Encode(models.RegisterResponse{
-			Success: false,
-			Message: "Method not allowed",
-		})
-		return
-	}
-
 	// Check for JSON format
 	var req models.RegisterRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(models.RegisterResponse{
+		json.NewEncoder(w).Encode(models.AuthResponse{
 			Success: false,
 			Message: "Invalid JSON format",
 		})
@@ -34,7 +24,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Validate input
-	if errors := utils.ValidateStruct(req); errors != nil {
+	if errors := utils.ValidateInputs(req); errors != nil {
 		writeErrorResponse(w, http.StatusBadRequest, errors)
 		return
 	}
@@ -76,17 +66,8 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 	// Success response
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(models.RegisterResponse{
+	json.NewEncoder(w).Encode(models.AuthResponse{
 		Success: true,
 		Message: "Registration successful",
-	})
-}
-
-/* -- Helper function(s) -- */
-func writeErrorResponse(w http.ResponseWriter, statusCode int, errors map[string]string) {
-	w.WriteHeader(statusCode)
-	json.NewEncoder(w).Encode(models.RegisterResponse{
-		Success: false,
-		Errors:  errors,
 	})
 }

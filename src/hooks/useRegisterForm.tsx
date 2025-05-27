@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { RegisterFormData, RegisterResponse } from "@/app/definitions";
+import { RegisterFormData, AuthResponse } from "@/app/definitions";
 
-export const useRegisterForm = () => {
+export function useRegisterForm() {
   const [formData, setFormData] = useState<RegisterFormData>({
     name: "",
     last_name: "",
@@ -31,14 +31,17 @@ export const useRegisterForm = () => {
     setErrors({});
 
     try {
-      const response = await fetch("http://localhost:8080/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/register`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+          credentials: "include",
+        }
+      );
 
-      const data: RegisterResponse = await response.json();
+      const data: AuthResponse = await response.json();
 
       if (data.success) {
         window.location.href = "/";
@@ -62,4 +65,4 @@ export const useRegisterForm = () => {
     handleInputChange,
     handleSubmit,
   };
-};
+}
