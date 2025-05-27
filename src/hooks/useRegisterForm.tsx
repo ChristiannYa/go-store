@@ -43,10 +43,19 @@ export function useRegisterForm() {
 
       const data: AuthResponse = await response.json();
 
-      if (data.success) {
+      if (data.success && data.accessToken) {
+        // TODO: Store access token in auth context instead
+        // of redirecting immediately
+        // For now, we'll still redirect but this will change
+        // when implemening AuthProvider
+        console.log("Access token received:", data.accessToken);
         window.location.href = "/";
       } else if (data.errors) {
         setErrors(data.errors);
+      } else {
+        setErrors({
+          form: "Registration failed. Please try again.",
+        });
       }
     } catch (error) {
       console.error("Registration error:", error);

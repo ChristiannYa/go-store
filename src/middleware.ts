@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { checkAuth } from "@/app/utils/checkAuth";
 
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
@@ -10,12 +9,12 @@ export async function middleware(request: NextRequest) {
   );
 
   if (isProtectedRoute) {
-    console.log("Checking auth for:", path);
-    const { isAuthenticated } = await checkAuth(request.cookies);
+    console.log("Middleware: Transitioning to access token validation");
 
-    if (!isAuthenticated) {
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
+    // Temprarily redirect all protected routes to login
+    // This will be replaced with the new auth system
+
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
   return NextResponse.next();

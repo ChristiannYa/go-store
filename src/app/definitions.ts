@@ -17,6 +17,7 @@ export interface AuthResponse {
   success: boolean;
   message?: string;
   errors?: Record<string, string>;
+  accessToken?: string;
 }
 
 export type AuthResult = {
@@ -39,4 +40,5 @@ export type User = {
 export type AuthData = {
   isLoggedIn: boolean;
   user?: User;
+  accessToken?: string;
 };

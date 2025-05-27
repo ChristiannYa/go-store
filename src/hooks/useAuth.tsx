@@ -9,31 +9,13 @@ export function useAuth() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/user/me`,
-          {
-            credentials: "include",
-          }
-        );
+    // Temporarily disable the current auth check
+    // This will be replaced with the new auth system
+    console.warn("useAuth: Temporarily disabling auth check");
 
-        if (response.ok) {
-          const data = await response.json();
-          setAuthData(data);
-        } else {
-          setAuthData({ isLoggedIn: false });
-        }
-      } catch (err) {
-        console.error("Auth check failed:", err);
-        setError("Failed to check authentication");
-        setAuthData({ isLoggedIn: false });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkAuth();
+    // Set as not logged in for now
+    setAuthData({ isLoggedIn: false });
+    setLoading(false);
   }, []);
 
   return {
