@@ -33,7 +33,7 @@ func CreateDBIfNotExists(config DBConfig) {
 		if err != nil {
 			log.Fatal("❌ Failed to create database:", err)
 		}
-		log.Printf("🎉 Database '%s' created successfully!", config.DBName)
+		log.Printf("☑️ Database '%s' created successfully!", config.DBName)
 	} else {
 		log.Printf("ℹ️ Database '%s' already exists.", config.DBName)
 	}

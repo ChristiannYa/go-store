@@ -60,7 +60,7 @@ func createTable(tableName, query string) {
 		log.Fatalf("❌ Failed to create %s table: %v", tableName, err)
 	}
 
-	log.Printf("🎉 Table '%s' created successfully", tableName)
+	log.Printf("☑️ Table '%s' created successfully", tableName)
 }
 
 // Check if a table exists in the database

@@ -43,6 +43,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = useCallback(async () => {
     try {
       await apiClient.post("/api/auth/logout");
+
+      window.location.href = "/";
     } catch (error) {
       console.error("Logout error:", error);
     } finally {

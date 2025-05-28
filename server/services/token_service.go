@@ -135,6 +135,8 @@ func (s *TokenService) ClearRefreshTokenCookie(w http.ResponseWriter) {
 		Expires:  time.Unix(0, 0),
 		HttpOnly: true,
 		MaxAge:   -1,
+		Secure:   os.Getenv("NODE_ENV") == "production",
+		SameSite: http.SameSiteLaxMode,
 	}
 	http.SetCookie(w, cookie)
 }
@@ -206,7 +208,6 @@ func (s *TokenService) RevokeRefreshToken(refreshTokenString string) error {
 			return s.getRefreshTokenSecret(), nil
 		},
 	)
-
 	if err != nil {
 		return fmt.Errorf("invalid refresh token: %w", err)
 	}
@@ -216,11 +217,26 @@ func (s *TokenService) RevokeRefreshToken(refreshTokenString string) error {
 		return fmt.Errorf("invalid refresh token claims")
 	}
 
-	// Mark token as revoked in database
-	query := `UPDATE refresh_tokens SET is_revoked = TRUE WHERE user_id = $1`
-	_, err = s.db.Exec(query, claims.UserID)
+	// ✅ Hash the specific token to find the exact database record
+	hasher := sha256.New()
+	hasher.Write([]byte(refreshTokenString))
+	tokenHash := hex.EncodeToString(hasher.Sum(nil))
+
+	// ✅ Revoke only the specific token by its hash
+	query := `UPDATE refresh_tokens SET is_revoked = TRUE WHERE token_hash = $1 AND user_id = $2`
+	result, err := s.db.Exec(query, tokenHash, claims.UserID)
 	if err != nil {
 		return fmt.Errorf("failed to revoke refresh token: %w", err)
+	}
+
+	// ✅ Check if any rows were actually updated
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to check revocation result: %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("refresh token not found or already revoked")
 	}
 
 	return nil
