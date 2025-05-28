@@ -26,10 +26,7 @@ body {
   @apply font-mono min-h-dvh py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center;
 }
 
-.link-slate-500 {
-  @apply text-lg text-slate-500 hover:text-slate-300 cursor-pointer;
-}
-
+/* -- Form -- */
 .form {
   @apply w-[300px] space-y-3;
 }
@@ -52,4 +49,8 @@ body {
 
 .form__input--error {
   @apply text-sm text-red-600 mt-1;
+}
+
+.link-slate-500 {
+  @apply text-lg text-slate-500 hover:text-slate-300 cursor-pointer;
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/router";
 import { LoginFormData, AuthResponse } from "@/app/definitions";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -14,7 +13,6 @@ export function useLoginForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
-  const router = useRouter();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -50,7 +48,8 @@ export function useLoginForm() {
         // Store the access token in the context
         login(data.accessToken);
 
-        router.push("/");
+        // Full page reload
+        window.location.href = "/";
       } else if (data.errors) {
         setErrors(data.errors);
       } else {

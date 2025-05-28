@@ -4,9 +4,8 @@ import React, {
   createContext,
   useContext,
   useState,
-  useEffect,
   useLayoutEffect,
-  useCallback, // Add this import
+  useCallback,
 } from "react";
 import { User, AuthData } from "@/app/definitions";
 import { apiClient } from "@/lib/api";
@@ -70,14 +69,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           return data.accessToken;
         }
       }
+
+      return null;
     } catch (error) {
       console.error("Token refresh failed:", error);
+      return null;
     }
-
-    // If refresh fails, logout user
-    logout();
-    return null;
-  }, [logout]);
+  }, []);
 
   // Setup API client interceptors
   useLayoutEffect(() => {
@@ -86,17 +84,38 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, [accessToken, refreshToken]);
 
   // Check authentication on mount
-  useEffect(() => {
+  useLayoutEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await apiClient.get("/api/user/me");
+        // Try to get access token via refresh token
+        const token = await refreshToken();
+
+        if (!token) {
+          setIsLoading(false);
+          return;
+        }
+
+        // Fetch user data with the token
+        // The apiClient should now have the token via the interceptor
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/user/me`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            credentials: "include",
+          }
+        );
 
         if (response.ok) {
           const data: AuthData = await response.json();
           if (data.isLoggedIn && data.user) {
             setUser(data.user);
-            // Access token should already be set by the refresh mechanism if needed
           }
+        } else {
+          console.log("Failed to fetch user data:", response.status);
         }
       } catch (error) {
         console.error("Auth check failed:", error);
@@ -106,7 +125,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     checkAuth();
-  }, []);
+  }, [refreshToken]);
 
   const login = (newAccessToken: string) => {
     setAccessToken(newAccessToken);

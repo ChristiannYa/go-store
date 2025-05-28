@@ -21,13 +21,13 @@ type DBConfig struct {
 	SSLMode  string
 }
 
-// buildDSN creates a PostgreSQL connection string
+// Creates a PostgreSQL connection string
 func (config DBConfig) buildDSN(dbname string) string {
 	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		config.Host, config.Port, config.User, config.Password, dbname, config.SSLMode)
 }
 
-// ConnectDB initializes the database connection and setup
+// Initializes the database connection and setup
 func ConnectDB() {
 	config := DBConfig{
 		Host:     os.Getenv("DB_HOST"),
@@ -40,13 +40,12 @@ func ConnectDB() {
 
 	validateConfig(config)
 
-	// Database and tables set up
 	CreateDBIfNotExists(config)
 	connectToDatabase(config)
 	CreateTables()
 }
 
-// validateConfig ensures all required environment variables are set
+// Ensures all required environment variables are set
 func validateConfig(config DBConfig) {
 	if config.Host == "" {
 		log.Fatal("❌ DB_HOST environment variable is required")
@@ -68,7 +67,7 @@ func validateConfig(config DBConfig) {
 	}
 }
 
-// connectToDatabase establishes connection to the application database
+// Establishes connection to the application database
 func connectToDatabase(config DBConfig) {
 	dsn := config.buildDSN(config.DBName)
 

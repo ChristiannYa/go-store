@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { RegisterFormData, AuthResponse } from "@/app/definitions";
 import { useAuth } from "@/contexts/AuthContext";
 

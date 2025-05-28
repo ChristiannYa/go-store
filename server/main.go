@@ -19,6 +19,8 @@ func main() {
 	config.ConnectDB()
 	defer config.CloseDB()
 
+	go utils.StartTokenCleanup()
+
 	// Setup routes
 	mux := http.NewServeMux()
 	routes.SetupRoutes(mux)
