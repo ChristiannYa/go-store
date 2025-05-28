@@ -39,20 +39,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Memoize the logout function to prevent recreation on every render
-  const logout = useCallback(async () => {
-    try {
-      await apiClient.post("/api/auth/logout");
-
-      window.location.href = "/";
-    } catch (error) {
-      console.error("Logout error:", error);
-    } finally {
-      setAccessToken(null);
-      setUser(null);
-    }
-  }, []);
-
   // Memoize the refreshToken function to prevent recreation on every render
   const refreshToken = useCallback(async (): Promise<string | null> => {
     try {
@@ -132,6 +118,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = (newAccessToken: string) => {
     setAccessToken(newAccessToken);
   };
+
+  // Memoize the logout function to prevent recreation on every render
+  const logout = useCallback(async () => {
+    try {
+      await apiClient.post("/api/auth/logout");
+
+      window.location.href = "/";
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      setAccessToken(null);
+      setUser(null);
+    }
+  }, []);
 
   const contextValue: AuthContextType = {
     accessToken,

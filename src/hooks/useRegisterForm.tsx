@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { RegisterFormData, AuthResponse } from "@/app/definitions";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -15,7 +14,6 @@ export function useRegisterForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
-  const router = useRouter();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -51,7 +49,7 @@ export function useRegisterForm() {
         // Store the access token in the context
         login(data.accessToken);
 
-        router.push("/");
+        window.location.href = "/";
       } else if (data.errors) {
         setErrors(data.errors);
       } else {
