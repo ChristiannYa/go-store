@@ -7,17 +7,13 @@ import React, {
   useLayoutEffect,
   useCallback,
 } from "react";
-import { User, AuthData } from "@/app/definitions";
 import { apiClient } from "@/lib/api";
 
 interface AuthContextType {
   accessToken: string | null;
-  user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (accessToken: string) => void;
-  logout: () => void;
-  setUser: (user: User | null) => void;
+  setAccessToken: (token: string | null) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -30,16 +26,12 @@ export const useAuth = () => {
   return authContext;
 };
 
-interface AuthProviderProps {
-  children: React.ReactNode;
-}
-
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Memoize the refreshToken function to prevent recreation on every render
   const refreshToken = useCallback(async (): Promise<string | null> => {
     try {
       const response = await fetch(
@@ -71,39 +63,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     apiClient.setTokenRefreshHandler(refreshToken);
   }, [accessToken, refreshToken]);
 
-  // Check authentication on mount
+  // Initialize auth on mount
   useLayoutEffect(() => {
     const checkAuth = async () => {
       try {
-        // Try to get access token via refresh token
         const token = await refreshToken();
-
         if (!token) {
           setIsLoading(false);
           return;
-        }
-
-        // Fetch user data with the token
-        // The apiClient should now have the token via the interceptor
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/user/me`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            credentials: "include",
-          }
-        );
-
-        if (response.ok) {
-          const data: AuthData = await response.json();
-          if (data.isLoggedIn && data.user) {
-            setUser(data.user);
-          }
-        } else {
-          console.log("Failed to fetch user data:", response.status);
         }
       } catch (error) {
         console.error("Auth check failed:", error);
@@ -115,32 +82,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     checkAuth();
   }, [refreshToken]);
 
-  const login = (newAccessToken: string) => {
-    setAccessToken(newAccessToken);
-  };
-
-  // Memoize the logout function to prevent recreation on every render
-  const logout = useCallback(async () => {
-    try {
-      await apiClient.post("/api/auth/logout");
-
-      window.location.href = "/";
-    } catch (error) {
-      console.error("Logout error:", error);
-    } finally {
-      setAccessToken(null);
-      setUser(null);
-    }
-  }, []);
-
   const contextValue: AuthContextType = {
     accessToken,
-    user,
-    isAuthenticated: !!accessToken && !!user,
+    isAuthenticated: !!accessToken,
     isLoading,
-    login,
-    logout,
-    setUser,
+    setAccessToken,
   };
 
   return (

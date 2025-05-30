@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { RegisterFormData, AuthResponse } from "@/app/definitions";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuthActions } from "@/hooks/useAuthActions";
 
 export function useRegisterForm() {
   const [formData, setFormData] = useState<RegisterFormData>({
@@ -13,7 +13,7 @@ export function useRegisterForm() {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
+  const { login } = useAuthActions();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

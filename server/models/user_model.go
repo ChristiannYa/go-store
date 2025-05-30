@@ -41,7 +41,5 @@ type AuthResponse struct {
 }
 
 type UserMeResponse struct {
-	IsLoggedIn  bool   `json:"isLoggedIn"`
-	User        *User  `json:"user,omitempty"`
-	AccessToken string `json:"accessToken,omitempty"`
+	User *User `json:"user,omitempty"`
 }

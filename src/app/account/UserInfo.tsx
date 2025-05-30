@@ -1,12 +1,20 @@
 "use client";
 
-import { useAuth } from "@/contexts/AuthContext";
+import { useUserData } from "@/hooks/useUserData";
 
 export default function UserInfo() {
-  const { user } = useAuth();
+  const { user, isLoading, error } = useUserData();
+
+  if (isLoading) {
+    return <div>Loading user data...</div>;
+  }
+
+  if (error) {
+    return <div className="text-red-500">Error while fetching user data</div>;
+  }
 
   if (!user) {
-    return <div className="text-red-500">Failed to load user data</div>;
+    return <div className="text-blue-500">No user data found</div>;
   }
 
   return (

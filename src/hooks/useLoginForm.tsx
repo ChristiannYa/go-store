@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { LoginFormData, AuthResponse } from "@/app/definitions";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuthActions } from "@/hooks/useAuthActions";
 
 export function useLoginForm() {
   const [formData, setFormData] = useState<LoginFormData>({
@@ -12,7 +12,7 @@ export function useLoginForm() {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
+  const { login } = useAuthActions();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

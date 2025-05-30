@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"go-auth/server/config"
 	"go-auth/server/middleware"
-	"go-auth/server/models"
 	"go-auth/server/services"
 	"net/http"
 )
@@ -15,36 +14,30 @@ func GetCurrentUser(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.GetUserIDFromContext(r)
 	if !ok {
 		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(models.UserMeResponse{
-			IsLoggedIn: false,
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": "Unauthorized",
 		})
 		return
 	}
 
 	userService := services.NewUserService(config.DB)
-
-	// Get user details
 	user, err := userService.GetUserByID(userID)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(models.UserMeResponse{
-			IsLoggedIn: false,
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": "Internal server error",
 		})
 		return
 	}
 
 	if user == nil {
 		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode(models.UserMeResponse{
-			IsLoggedIn: false,
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": "User not found",
 		})
 		return
 	}
 
-	// Success response
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(models.UserMeResponse{
-		IsLoggedIn: true,
-		User:       user,
-	})
+	json.NewEncoder(w).Encode(user)
 }

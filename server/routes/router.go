@@ -17,6 +17,7 @@ func SetupAuthRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/auth/login", auth.Login)
 	mux.HandleFunc("POST /api/auth/refresh", auth.RefreshToken)
 	mux.HandleFunc("POST /api/auth/logout", auth.Logout)
+	mux.HandleFunc("POST /api/auth/verify", auth.VerifyToken)
 }
 
 func SetupUserRoutes(mux *http.ServeMux) {

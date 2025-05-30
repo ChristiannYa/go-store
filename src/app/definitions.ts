@@ -36,9 +36,3 @@ export type User = {
   email: string;
   created_at: string;
 };
-
-export type AuthData = {
-  isLoggedIn: boolean;
-  user?: User;
-  accessToken?: string;
-};

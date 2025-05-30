@@ -16,7 +16,7 @@ import (
 
 const (
 	AccessTokenDuration  = 15 * time.Minute    // 15 minutes
-	RefreshTokenDuration = 30 * 24 * time.Hour // 30 days
+	RefreshTokenDuration = 90 * 24 * time.Hour // 90 days
 )
 
 type TokenService struct {
@@ -142,61 +142,23 @@ func (s *TokenService) ClearRefreshTokenCookie(w http.ResponseWriter) {
 }
 
 func (s *TokenService) RefreshAccessToken(refreshTokenString string) (string, error) {
-	token, err := jwt.ParseWithClaims(
-		refreshTokenString,
-		&models.RefreshTokenClaims{},
-		func(token *jwt.Token) (any, error) {
-			if token.Method.Alg() != "HS256" {
-				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-			}
-			return s.getRefreshTokenSecret(), nil
-		},
-	)
+	// Parse the refresh token
+	claims, err := s.parseRefreshToken(refreshTokenString)
 	if err != nil {
 		return "", fmt.Errorf("invalid refresh token: %w", err)
 	}
 
-	claims, ok := token.Claims.(*models.RefreshTokenClaims)
-	if !ok || !token.Valid {
-		return "", fmt.Errorf("invalid refresh token claims")
-	}
-
-	// Verify token exists in database and is not revoked
-	hasher := sha256.New()
-	hasher.Write([]byte(refreshTokenString))
-	providedTokenHash := hex.EncodeToString(hasher.Sum(nil))
-
-	var tokenHash string
-	var isRevoked bool
-	query := `
-		SELECT token_hash, is_revoked 
-		FROM refresh_tokens 
-		WHERE user_id = $1 AND expires_at > NOW() AND is_revoked = FALSE
-	`
-	rows, err := s.db.Query(query, claims.UserID)
+	// Validate in database
+	isValid, err := s.validateRefreshTokenInDB(refreshTokenString, claims.UserID)
 	if err != nil {
-		return "", fmt.Errorf("failed to query refresh tokens: %w", err)
-	}
-	defer rows.Close()
-
-	var validTokenFound bool
-	for rows.Next() {
-		err := rows.Scan(&tokenHash, &isRevoked)
-		if err != nil {
-			continue
-		}
-
-		// Compare SHA-256 hashes
-		if tokenHash == providedTokenHash {
-			validTokenFound = true
-			break
-		}
+		return "", fmt.Errorf("failed to validate refresh token: %w", err)
 	}
 
-	if !validTokenFound {
+	if !isValid {
 		return "", fmt.Errorf("refresh token not found or expired")
 	}
 
+	// Generate a new access token
 	return s.GenerateAccessToken(claims.UserID)
 }
 
@@ -240,6 +202,22 @@ func (s *TokenService) RevokeRefreshToken(refreshTokenString string) error {
 	}
 
 	return nil
+}
+
+func (s *TokenService) ValidateRefreshToken(refreshTokenString string) bool {
+	// Parse and validate JWT
+	claims, err := s.parseRefreshToken(refreshTokenString)
+	if err != nil {
+		return false
+	}
+
+	// Validate in database
+	isValid, err := s.validateRefreshTokenInDB(refreshTokenString, claims.UserID)
+	if err != nil {
+		return false
+	}
+
+	return isValid
 }
 
 // Verify access token
