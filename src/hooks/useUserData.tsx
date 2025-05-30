@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { User } from "@/app/definitions";
 import { useAuth } from "@/contexts/AuthContext";
+import { apiClient } from "@/lib/api";
 
 export function useUserData() {
   const [user, setUser] = useState<User | null>(null);
@@ -11,21 +12,13 @@ export function useUserData() {
   useEffect(() => {
     const fetchUserData = async () => {
       if (!accessToken) {
+        /* Handle edge cases where accessToken is null */
+        setIsLoading(false);
         return;
       }
 
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/user/me`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${accessToken}`,
-            },
-            credentials: "include",
-          }
-        );
+        const response = await apiClient.get("/api/user/me");
 
         if (response.ok) {
           const userData: User = await response.json();
