@@ -53,17 +53,19 @@ func (s *TokenService) parseRefreshToken(refreshTokenString string) (*models.Ref
 }
 
 // Helper function for database validation
-func (s *TokenService) validateRefreshTokenInDB(refreshTokenString string, userID int) (bool, error) {
+func (s *TokenService) validateRefreshTokenInDB(refreshTokenString string, userID int) (
+	bool, error,
+) {
 	// Hash the token
 	hasher := sha256.New()
 	hasher.Write([]byte(refreshTokenString))
 	providedTokenHash := hex.EncodeToString(hasher.Sum(nil))
 
 	query := `
-        SELECT token_hash 
-        FROM refresh_tokens 
-        WHERE user_id = $1 AND expires_at > NOW() AND is_revoked = FALSE
-    `
+		SELECT token_hash 
+		FROM refresh_tokens 
+		WHERE user_id = $1 AND expires_at > NOW() AND is_revoked = FALSE
+	`
 
 	rows, err := s.db.Query(query, userID)
 	if err != nil {

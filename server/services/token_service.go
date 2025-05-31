@@ -141,7 +141,10 @@ func (s *TokenService) ClearRefreshTokenCookie(w http.ResponseWriter) {
 	http.SetCookie(w, cookie)
 }
 
-func (s *TokenService) RefreshAccessToken(refreshTokenString string) (string, error) {
+// Parses the refresh token string and returns the claims
+func (s *TokenService) RefreshAccessToken(refreshTokenString string) (
+	string, error,
+) {
 	// Parse the refresh token
 	claims, err := s.parseRefreshToken(refreshTokenString)
 	if err != nil {
@@ -160,6 +163,22 @@ func (s *TokenService) RefreshAccessToken(refreshTokenString string) (string, er
 
 	// Generate a new access token
 	return s.GenerateAccessToken(claims.UserID)
+}
+
+func (s *TokenService) ValidateRefreshToken(refreshTokenString string) bool {
+	// Parse and validate JWT
+	claims, err := s.parseRefreshToken(refreshTokenString)
+	if err != nil {
+		return false
+	}
+
+	// Validate in database
+	isValid, err := s.validateRefreshTokenInDB(refreshTokenString, claims.UserID)
+	if err != nil {
+		return false
+	}
+
+	return isValid
 }
 
 func (s *TokenService) RevokeRefreshToken(refreshTokenString string) error {
@@ -202,22 +221,6 @@ func (s *TokenService) RevokeRefreshToken(refreshTokenString string) error {
 	}
 
 	return nil
-}
-
-func (s *TokenService) ValidateRefreshToken(refreshTokenString string) bool {
-	// Parse and validate JWT
-	claims, err := s.parseRefreshToken(refreshTokenString)
-	if err != nil {
-		return false
-	}
-
-	// Validate in database
-	isValid, err := s.validateRefreshTokenInDB(refreshTokenString, claims.UserID)
-	if err != nil {
-		return false
-	}
-
-	return isValid
 }
 
 // Verify access token
