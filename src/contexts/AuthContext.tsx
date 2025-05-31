@@ -8,7 +8,6 @@ import React, {
   useCallback,
 } from "react";
 import { apiClient } from "@/lib/api";
-import { useServerStatus } from "./ServerStatusContext";
 
 interface AuthContextType {
   accessToken: string | null;
@@ -32,7 +31,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { isServerOnline, isServerCheckDone } = useServerStatus();
 
   // Define the token refresh function (memoized to prevent recreation on re-renders)
   const refreshToken = useCallback(async (): Promise<string | null> => {
@@ -60,19 +58,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, []);
 
-  // Execute the refresh function on mount to check for existing session
   useLayoutEffect(() => {
     const checkAuth = async () => {
-      // Don't do anything until we've checked the server status
-      if (!isServerCheckDone) {
-        return;
-      }
-
-      if (!isServerOnline) {
-        setIsLoading(false);
-        return;
-      }
-
       try {
         const token = await refreshToken();
         if (!token) {
@@ -87,9 +74,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     };
 
     checkAuth();
-  }, [refreshToken, isServerOnline, isServerCheckDone]);
+  }, [refreshToken]);
 
-  // Setup API client with token getter and refresh handler
   useLayoutEffect(() => {
     apiClient.setTokenGetter(() => accessToken);
     apiClient.setTokenRefreshHandler(refreshToken);

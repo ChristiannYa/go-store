@@ -1,6 +1,8 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { ServerOfflinePage } from "@/components/ServerOfflinePage";
+import { ServerCheckingPage } from "@/components/ServerCheckingPage";
 
 interface ServerStatusContextType {
   isServerOnline: boolean;
@@ -42,7 +44,6 @@ export const ServerStatusProvider: React.FC<{ children: React.ReactNode }> = ({
       );
       setIsServerOnline(response.ok);
     } catch (error) {
-      // Just to avoid logging the error
       if (error instanceof Error) {
         setIsServerOnline(false);
       }
@@ -58,6 +59,23 @@ export const ServerStatusProvider: React.FC<{ children: React.ReactNode }> = ({
     return () => clearInterval(interval);
   }, []);
 
+  const renderContent = () => {
+    if (!isServerCheckDone) {
+      return <ServerCheckingPage />;
+    }
+
+    if (!isServerOnline) {
+      return (
+        <ServerOfflinePage
+          onRetry={checkServerStatus}
+          isCheckingServer={isCheckingServer}
+        />
+      );
+    }
+
+    return children;
+  };
+
   return (
     <ServerStatusContext.Provider
       value={{
@@ -67,7 +85,7 @@ export const ServerStatusProvider: React.FC<{ children: React.ReactNode }> = ({
         checkServerStatus,
       }}
     >
-      {children}
+      {renderContent()}
     </ServerStatusContext.Provider>
   );
 };

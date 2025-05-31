@@ -3,10 +3,32 @@ import { NextRequest, NextResponse } from "next/server";
 const protectedRoutes = ["/account"];
 const publicRoutes = ["/login", "/register"];
 
+// Check if server is available first
+async function isServerAvailable(): Promise<boolean> {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/health`,
+      {
+        method: "GET",
+        signal: AbortSignal.timeout(2000),
+      }
+    );
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
 export default async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
   const isProtectedRoute = protectedRoutes.includes(path);
   const isPublicRoute = publicRoutes.includes(path);
+
+  // If server is down, let the client-side handle everything
+  const serverAvailable = await isServerAvailable();
+  if (!serverAvailable) {
+    return NextResponse.next();
+  }
 
   let isAuthenticated = false;
 
@@ -22,6 +44,7 @@ export default async function middleware(req: NextRequest) {
             "Content-Type": "application/json",
             Cookie: `refresh_token=${refreshToken}`,
           },
+          signal: AbortSignal.timeout(3000),
         }
       );
 
@@ -32,6 +55,7 @@ export default async function middleware(req: NextRequest) {
     }
   } catch (error) {
     console.error("Auth verification error:", error);
+    isAuthenticated = false;
   }
 
   if (isProtectedRoute && !isAuthenticated) {

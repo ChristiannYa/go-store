@@ -4,7 +4,6 @@ import "./globals.css";
 import { ServerStatusProvider } from "@/contexts/ServerStatusContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import AuthInitializer from "@/components/AuthInitializer";
-import ServerStatusPopup from "@/components/ServerStatusPopup";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,7 +33,6 @@ export default function RootLayout({
         <ServerStatusProvider>
           <AuthProvider>
             <AuthInitializer>{children}</AuthInitializer>
-            <ServerStatusPopup />
           </AuthProvider>
         </ServerStatusProvider>
       </body>
