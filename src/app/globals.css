@@ -23,7 +23,7 @@ body {
 }
 
 .page {
-  @apply font-mono min-h-dvh py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center;
+  @apply font-mono min-h-dvh py-12 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center;
 }
 
 /* -- Form -- */
