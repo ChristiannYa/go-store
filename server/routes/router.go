@@ -2,14 +2,20 @@ package routes
 
 import (
 	"go-auth/server/middleware"
+	"go-auth/server/routes/api"
 	"go-auth/server/routes/auth"
 	"go-auth/server/routes/user"
 	"net/http"
 )
 
 func SetupRoutes(mux *http.ServeMux) {
+	SetupApiRoutes(mux)
 	SetupAuthRoutes(mux)
 	SetupUserRoutes(mux)
+}
+
+func SetupApiRoutes(mux *http.ServeMux) {
+	mux.HandleFunc("/api/health", api.Health)
 }
 
 func SetupAuthRoutes(mux *http.ServeMux) {
