@@ -10,7 +10,7 @@ async function isServerAvailable(): Promise<boolean> {
       `${process.env.NEXT_PUBLIC_API_URL}/api/health`,
       {
         method: "GET",
-        signal: AbortSignal.timeout(2000),
+        signal: AbortSignal.timeout(5000),
       }
     );
     return response.ok;
@@ -44,7 +44,7 @@ export default async function middleware(req: NextRequest) {
             "Content-Type": "application/json",
             Cookie: `refresh_token=${refreshToken}`,
           },
-          signal: AbortSignal.timeout(3000),
+          signal: AbortSignal.timeout(5000),
         }
       );
 
