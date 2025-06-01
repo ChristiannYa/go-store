@@ -29,11 +29,11 @@ class ApiClient {
 
     const headers: ApiHeaders = {
       "Content-Type": "application/json",
-      // Spread existing headers if they exist
+      /* Spread existing headers if they exist */
       ...((options.headers as Record<string, string>) || {}),
     };
 
-    // Only add token on first request
+    /* Add current access token (retry requests handle token manually) */
     if (token && !isRetry) {
       headers["Authorization"] = `Bearer ${token}`;
     }
@@ -44,7 +44,11 @@ class ApiClient {
       credentials: "include",
     });
 
-    // Handle token expiration - only on first request
+    /* 
+      When calling a method that requires authentication and the
+      token is expired, the server will return a 401 status code,
+      which will trigger the token refresh handler (only on first attempt)
+    */
     if (response.status === 401 && !isRetry && this.onTokenExpired) {
       try {
         // Refresh token
@@ -58,6 +62,10 @@ class ApiClient {
               "Content-Type": "application/json",
             },
           };
+          /*
+            This time, retry the same request with the new token, setting
+            isRetry to true to prevent an infinite loop.
+          */
           return this.makeRequest(endpoint, updatedOptions, true);
         }
       } catch (error) {
@@ -93,5 +101,4 @@ class ApiClient {
   }
 }
 
-// Create and export API client instance
 export const apiClient = new ApiClient(process.env.NEXT_PUBLIC_API_URL || "");

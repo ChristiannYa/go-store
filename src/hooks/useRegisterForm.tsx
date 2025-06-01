@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { RegisterFormData, AuthResponse } from "@/app/definitions";
-import { useAuthActions } from "@/hooks/useAuthActions";
+import { useAuthActions } from "./useAuthActions";
 import { useRouter } from "next/navigation";
 
 export function useRegisterForm() {
