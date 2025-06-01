@@ -1,15 +1,9 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { ServerStatusContextType } from "@/app/definitions";
 import { ServerOfflinePage } from "@/components/ServerOfflinePage";
 import { ServerCheckingPage } from "@/components/ServerCheckingPage";
-
-interface ServerStatusContextType {
-  isServerOnline: boolean;
-  isCheckingServer: boolean;
-  isServerCheckDone: boolean;
-  checkServerStatus: () => Promise<void>;
-}
 
 const ServerStatusContext = createContext<ServerStatusContextType | undefined>(
   undefined

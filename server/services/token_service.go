@@ -15,11 +15,11 @@ import (
 )
 
 const (
-	AccessTokenDuration = 15 * time.Minute // 15 minutes
-	// AccessTokenDuration = 10 * time.Second // TEST
+	// AccessTokenDuration = 15 * time.Minute // 15 minutes
+	AccessTokenDuration = 10 * time.Second // TEST
 
-	RefreshTokenDuration = 90 * 24 * time.Hour // 90 days
-	// RefreshTokenDuration = 1 * time.Minute // TEST
+	// RefreshTokenDuration = 90 * 24 * time.Hour // 90 days
+	RefreshTokenDuration = 1 * time.Minute // TEST
 )
 
 type TokenService struct {

@@ -1,7 +1,4 @@
-interface ServerOfflinePageProps {
-  onRetry: () => void;
-  isCheckingServer: boolean;
-}
+import { ServerOfflinePageProps } from "@/app/definitions";
 
 export function ServerOfflinePage({
   onRetry,

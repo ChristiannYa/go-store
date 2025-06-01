@@ -1,17 +1,6 @@
 "use client";
 
-// Define proper types for request data
-type RequestData =
-  | Record<string, unknown>
-  | FormData
-  | string
-  | null
-  | undefined;
-
-// ApiHeaders type that allows string indexing
-interface ApiHeaders extends Record<string, string> {
-  "Content-Type": string;
-}
+import { ApiHeaders, RequestData } from "@/app/definitions";
 
 class ApiClient {
   private baseURL: string;

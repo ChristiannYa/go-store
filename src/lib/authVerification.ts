@@ -1,16 +1,11 @@
-interface AuthVerificationOptions {
-  timeout?: number;
-  cookies?: string /* For route middleware */;
-}
-
-interface AuthVerificationResult {
-  isAuthenticated: boolean;
-  error?: string;
-}
+import {
+  AuthVerificationOptions,
+  AuthVerificationResponse,
+} from "@/app/definitions";
 
 export async function verifyAuthentication(
   options: AuthVerificationOptions = {}
-): Promise<AuthVerificationResult> {
+): Promise<AuthVerificationResponse> {
   const { timeout = 5000, cookies } = options;
 
   try {

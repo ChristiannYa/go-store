@@ -8,13 +8,7 @@ import React, {
   useCallback,
 } from "react";
 import { apiClient } from "@/lib/api";
-
-interface TokenContextType {
-  accessToken: string | null;
-  isLoading: boolean;
-  setAccessToken: (token: string | null) => void;
-  refreshToken: () => Promise<string | null>;
-}
+import { TokenContextType } from "@/app/definitions";
 
 const TokenContext = createContext<TokenContextType | undefined>(undefined);
 

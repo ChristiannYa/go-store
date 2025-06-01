@@ -2,15 +2,9 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { verifyAuthentication } from "@/lib/authVerification";
+import { AuthVerificationHookResult } from "@/app/definitions";
 
-interface AuthVerificationResult {
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  error: string | null;
-  refetch: () => Promise<void>;
-}
-
-export function useAuthVerification(): AuthVerificationResult {
+export function useAuthVerification(): AuthVerificationHookResult {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
