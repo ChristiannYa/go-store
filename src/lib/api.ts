@@ -35,7 +35,6 @@ class ApiClient {
     options: RequestInit = {},
     isRetry = false
   ): Promise<Response> {
-    console.log(`API Call: ${endpoint}, isRetry: ${isRetry}`);
     const url = `${this.baseURL}${endpoint}`;
     const token = this.getAccessToken?.();
 
@@ -48,7 +47,6 @@ class ApiClient {
     // Only add token on first request
     if (token && !isRetry) {
       headers["Authorization"] = `Bearer ${token}`;
-      console.log(`🔑 Using access token: ${token.substring(0, 20)}...`);
     }
 
     const response = await fetch(url, {
@@ -57,18 +55,12 @@ class ApiClient {
       credentials: "include",
     });
 
-    console.log(`📤 Response: ${response.status} for ${endpoint}`);
-
     // Handle token expiration - only on first request
     if (response.status === 401 && !isRetry && this.onTokenExpired) {
       try {
-        console.log(`🟡 Token expired, attempting refresh...`);
-
         // Refresh token
         const newToken = await this.onTokenExpired();
         if (newToken) {
-          console.log(`✅ Token refreshed successfully, retrying...`);
-
           const updatedOptions = {
             ...options,
             headers: {
@@ -78,11 +70,9 @@ class ApiClient {
             },
           };
           return this.makeRequest(endpoint, updatedOptions, true);
-        } else {
-          console.log(`❌ Token refresh returned null`);
         }
       } catch (error) {
-        console.error("❌ Token refresh failed:", error);
+        console.error("Token refresh failed:", error);
       }
     }
 
