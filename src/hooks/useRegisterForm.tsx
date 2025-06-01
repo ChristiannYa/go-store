@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { RegisterFormData, AuthResponse } from "@/app/definitions";
 import { useAuthActions } from "@/hooks/useAuthActions";
+import { useRouter } from "next/navigation";
 
 export function useRegisterForm() {
   const [formData, setFormData] = useState<RegisterFormData>({
@@ -14,6 +15,7 @@ export function useRegisterForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuthActions();
+  const router = useRouter();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -49,7 +51,7 @@ export function useRegisterForm() {
         // Store the access token in the context
         login(data.accessToken);
 
-        window.location.href = "/";
+        router.push("/");
       } else if (data.errors) {
         setErrors(data.errors);
       } else {

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { LoginFormData, AuthResponse } from "@/app/definitions";
 import { useAuthActions } from "@/hooks/useAuthActions";
+import { useRouter } from "next/navigation";
 
 export function useLoginForm() {
   const [formData, setFormData] = useState<LoginFormData>({
@@ -13,6 +14,7 @@ export function useLoginForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuthActions();
+  const router = useRouter();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -49,7 +51,9 @@ export function useLoginForm() {
         login(data.accessToken);
 
         // Full page reload
-        window.location.href = "/";
+        // window.location.href = "/";
+
+        router.push("/");
       } else if (data.errors) {
         setErrors(data.errors);
       } else {

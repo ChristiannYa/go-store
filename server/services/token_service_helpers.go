@@ -53,35 +53,27 @@ func (s *TokenService) parseRefreshToken(refreshTokenString string) (*models.Ref
 }
 
 // Helper function for database validation
-func (s *TokenService) validateRefreshTokenInDB(refreshTokenString string, userID int) (
-	bool, error,
-) {
-	// Hash the token
+func (s *TokenService) validateRefreshTokenInDB(refreshTokenString string, userID int) (bool, error) {
+	// Hash the token once
 	hasher := sha256.New()
 	hasher.Write([]byte(refreshTokenString))
-	providedTokenHash := hex.EncodeToString(hasher.Sum(nil))
+	tokenHash := hex.EncodeToString(hasher.Sum(nil))
 
+	var exists bool
 	query := `
-		SELECT token_hash 
-		FROM refresh_tokens 
-		WHERE user_id = $1 AND expires_at > NOW() AND is_revoked = FALSE
+		SELECT EXISTS(
+			SELECT 1 FROM refresh_tokens 
+			WHERE user_id = $1 
+			AND token_hash = $2 
+			AND expires_at > NOW() 
+			AND is_revoked = FALSE
+		)
 	`
 
-	rows, err := s.db.Query(query, userID)
+	err := s.db.QueryRow(query, userID, tokenHash).Scan(&exists)
 	if err != nil {
-		return false, fmt.Errorf("failed to query refresh tokens: %w", err)
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var tokenHash string
-		if err := rows.Scan(&tokenHash); err != nil {
-			continue
-		}
-		if tokenHash == providedTokenHash {
-			return true, nil
-		}
+		return false, fmt.Errorf("failed to validate refresh token: %w", err)
 	}
 
-	return false, nil
+	return exists, nil
 }

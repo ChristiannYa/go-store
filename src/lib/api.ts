@@ -35,9 +35,8 @@ class ApiClient {
     options: RequestInit = {},
     isRetry = false
   ): Promise<Response> {
+    console.log(`API Call: ${endpoint}, isRetry: ${isRetry}`);
     const url = `${this.baseURL}${endpoint}`;
-
-    // Get access token and add to headers
     const token = this.getAccessToken?.();
 
     const headers: ApiHeaders = {
@@ -46,9 +45,10 @@ class ApiClient {
       ...((options.headers as Record<string, string>) || {}),
     };
 
-    // Add authorization header if token exists and this isn't a retry with custom auth
+    // Only add token on first request
     if (token && !isRetry) {
       headers["Authorization"] = `Bearer ${token}`;
+      console.log(`🔑 Using access token: ${token.substring(0, 20)}...`);
     }
 
     const response = await fetch(url, {
@@ -57,25 +57,32 @@ class ApiClient {
       credentials: "include",
     });
 
-    // Handle token expiration
+    console.log(`📤 Response: ${response.status} for ${endpoint}`);
+
+    // Handle token expiration - only on first request
     if (response.status === 401 && !isRetry && this.onTokenExpired) {
       try {
+        console.log(`🟡 Token expired, attempting refresh...`);
+
+        // Refresh token
         const newToken = await this.onTokenExpired();
         if (newToken) {
-          // Retry request with new token
-          const retryHeaders: ApiHeaders = {
-            ...headers,
-            Authorization: `Bearer ${newToken}`,
-          };
+          console.log(`✅ Token refreshed successfully, retrying...`);
 
-          return fetch(url, {
+          const updatedOptions = {
             ...options,
-            headers: retryHeaders,
-            credentials: "include",
-          });
+            headers: {
+              ...((options.headers as Record<string, string>) || {}),
+              Authorization: `Bearer ${newToken}`,
+              "Content-Type": "application/json",
+            },
+          };
+          return this.makeRequest(endpoint, updatedOptions, true);
+        } else {
+          console.log(`❌ Token refresh returned null`);
         }
       } catch (error) {
-        console.error("Token refresh failed:", error);
+        console.error("❌ Token refresh failed:", error);
       }
     }
 

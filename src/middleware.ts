@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const protectedRoutes = ["/account"];
+
+// Public routes that don't require authentication
+// but when the user is logged in, they will be
+// redirected to the dashboard
 const publicRoutes = ["/login", "/register"];
 
 // Check if server is available first

@@ -46,7 +46,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       if (response.ok) {
         const data = await response.json();
         if (data.success && data.accessToken) {
-          setAccessToken(data.accessToken);
+          setAccessToken(
+            data.accessToken
+          ); /* Stores new access token in memory */
           return data.accessToken;
         }
       }

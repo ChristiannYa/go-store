@@ -6,14 +6,6 @@ import { useAuth } from "@/contexts/AuthContext";
 export default function Home() {
   const { isAuthenticated, isLoading } = useAuth();
 
-  if (isLoading) {
-    return (
-      <div className="page">
-        <div>Loading...</div>
-      </div>
-    );
-  }
-
   return (
     <div className="font-mono grid grid-rows-[auto_1fr_auto] items-center justify-items-center min-h-dvh gap-4 p-4">
       <header>
@@ -23,7 +15,9 @@ export default function Home() {
         </h1>
       </header>
       <main className="flex flex-col justify-center items-center">
-        {!isAuthenticated ? (
+        {isLoading ? (
+          <p className="text-lg">Loading...</p>
+        ) : !isAuthenticated ? (
           <div className="text-lg text-center flex flex-col gap-y-2">
             <Link href={"/register"}>
               <p className="text-slate-500 hover:text-blue-500 cursor-pointer">

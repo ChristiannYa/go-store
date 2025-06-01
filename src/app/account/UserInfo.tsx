@@ -6,7 +6,7 @@ export default function UserInfo() {
   const { user, isLoading, error } = useUserData();
 
   if (isLoading) {
-    return <div>Loading user data...</div>;
+    return <div className="text-amber-500">Loading user data...</div>;
   }
 
   if (error) {
