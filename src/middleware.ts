@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { verifyAuthentication } from "./lib/authVerification";
 
 const protectedRoutes = ["/account"];
 
@@ -34,32 +35,13 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  let isAuthenticated = false;
+  const { isAuthenticated, error } = await verifyAuthentication({
+    cookies: req.cookies.toString(),
+    timeout: 5000,
+  });
 
-  try {
-    const refreshToken = req.cookies.get("refresh_token")?.value;
-
-    if (refreshToken) {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/verify`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Cookie: `refresh_token=${refreshToken}`,
-          },
-          signal: AbortSignal.timeout(5000),
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        isAuthenticated = data.isAuthenticated;
-      }
-    }
-  } catch (error) {
-    console.error("Auth verification error:", error);
-    isAuthenticated = false;
+  if (error) {
+    console.error("Middleware error:", error);
   }
 
   if (isProtectedRoute && !isAuthenticated) {

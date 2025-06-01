@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { verifyAuthentication } from "@/lib/authVerification";
 
 interface AuthVerificationResult {
   isAuthenticated: boolean;
@@ -15,31 +16,16 @@ export function useAuthVerification(): AuthVerificationResult {
   const [error, setError] = useState<string | null>(null);
 
   const verifyAuth = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
+    setIsLoading(true);
+    setError(null);
 
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/verify`,
-        {
-          method: "POST",
-          credentials: "include",
-        }
-      );
+    const result = await verifyAuthentication({
+      timeout: 5000,
+    });
 
-      if (response.ok) {
-        const data = await response.json();
-        setIsAuthenticated(data.isAuthenticated);
-      } else {
-        // If verify endpoint fails, assume not authenticated
-        setIsAuthenticated(false);
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Verification failed");
-      setIsAuthenticated(false);
-    } finally {
-      setIsLoading(false);
-    }
+    setIsAuthenticated(result.isAuthenticated);
+    setError(result.error || null);
+    setIsLoading(false);
   }, []);
 
   useEffect(() => {

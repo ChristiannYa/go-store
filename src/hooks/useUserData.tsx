@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { User } from "@/app/definitions";
-import { useAuth } from "@/contexts/AuthContext";
+import { useTokens } from "@/contexts/TokenContext";
 import { apiClient } from "@/lib/api";
 
 export function useUserData() {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { accessToken } = useAuth();
+  const { accessToken } = useTokens();
 
   useEffect(() => {
     const fetchUserData = async () => {

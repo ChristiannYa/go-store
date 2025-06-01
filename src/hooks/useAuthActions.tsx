@@ -1,9 +1,9 @@
-import { useAuth } from "@/contexts/AuthContext";
+import { useTokens } from "@/contexts/TokenContext";
 import { apiClient } from "@/lib/api";
 import { useCallback } from "react";
 
 export function useAuthActions() {
-  const { setAccessToken } = useAuth();
+  const { setAccessToken } = useTokens();
 
   const login = useCallback(
     (newAccessToken: string) => {
