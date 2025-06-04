@@ -29,7 +29,7 @@ type RegisterRequest struct {
 	Name            string `json:"name" validate:"required,min=2,alpha_spaces"`
 	LastName        string `json:"last_name" validate:"required,min=2,alpha_spaces"`
 	Email           string `json:"email" validate:"required,email"`
-	Password        string `json:"password" validate:"required,min=6,password_complexity"`
+	Password        string `json:"password" validate:"required,password_complexity"`
 	ConfirmPassword string `json:"confirm_password" validate:"required,eqfield=Password"`
 }
 
@@ -42,4 +42,14 @@ type AuthResponse struct {
 
 type UserMeResponse struct {
 	User *User `json:"user,omitempty"`
+}
+
+type ResetPasswordRequest struct {
+	Token           string `json:"token" validate:"required"`
+	Password        string `json:"password" validate:"required,password_complexity"`
+	ConfirmPassword string `json:"confirm_password" validate:"required,eqfield=Password"`
+}
+
+type ForgotPasswordRequest struct {
+	Email string `json:"email" validate:"required,email"`
 }

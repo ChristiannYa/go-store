@@ -108,3 +108,12 @@ func (s *UserService) GetUserByID(userID int) (*models.User, error) {
 	}
 	return &user, nil
 }
+
+func (s *UserService) UpdatePassword(userID int, hashedPassword string) error {
+	query := `UPDATE users SET password_hash = $1, updated_at = $2 WHERE id = $3`
+	_, err := s.db.Exec(query, hashedPassword, time.Now(), userID)
+	if err != nil {
+		return fmt.Errorf("failed to update password: %w", err)
+	}
+	return nil
+}

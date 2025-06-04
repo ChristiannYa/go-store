@@ -6,15 +6,16 @@ import (
 )
 
 const (
-	UsersTable         = "users"
-	RefreshTokensTable = "refresh_tokens"
+	UsersTable               = "users"
+	RefreshTokensTable       = "refresh_tokens"
+	PasswordResetTokensTable = "password_reset_tokens"
 )
 
-// CreateTables creates all application tables
+// Create all application tables
 func CreateTables() {
 	tables := map[string]string{
 		UsersTable: `
-			CREATE TABLE %s (
+			CREATE TABLE IF NOT EXISTS %s (
 				id SERIAL PRIMARY KEY,
 				name VARCHAR(255) NOT NULL,
 				last_name VARCHAR(255) NOT NULL,
@@ -38,6 +39,16 @@ func CreateTables() {
 				ip_address INET
 			)
 		`,
+		PasswordResetTokensTable: `
+			CREATE TABLE IF NOT EXISTS %s (
+				id SERIAL PRIMARY KEY,
+				user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+				token_hash VARCHAR(255) NOT NULL,
+				expires_at TIMESTAMP NOT NULL,
+				used BOOLEAN DEFAULT FALSE,
+				created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+			);
+		`,
 	}
 
 	// Loop through tables map and conditionally create non-existent tables
@@ -55,7 +66,7 @@ func CreateTables() {
 func createTable(tableName, query string) {
 	formattedSQL := fmt.Sprintf(query, tableName)
 
-	_, err := DB.Exec(formattedSQL) // We don't need the result, so we ignore it
+	_, err := DB.Exec(formattedSQL)
 	if err != nil {
 		log.Fatalf("❌ Failed to create %s table: %v", tableName, err)
 	}
@@ -63,7 +74,6 @@ func createTable(tableName, query string) {
 	log.Printf("☑️ Table '%s' created successfully", tableName)
 }
 
-// Check if a table exists in the database
 func tableExists(tableName string) bool {
 	var exists bool
 	checkQuery := `
@@ -80,4 +90,51 @@ func tableExists(tableName string) bool {
 	}
 
 	return exists
+}
+
+// Create table's indexes
+func createIndexes() {
+	indexes := map[string]string{
+		// Password Reset Token Indexes
+		"idx_password_reset_tokens_hash": `
+      CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_hash 
+      ON password_reset_tokens(token_hash);
+    `,
+		"idx_password_reset_tokens_expires": `
+      CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_expires 
+      ON password_reset_tokens(expires_at);
+    `,
+		"idx_password_reset_tokens_user_id": `
+      CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_user_id 
+      ON password_reset_tokens(user_id);
+    `,
+
+		// Refresh Token Indexes
+		"idx_refresh_tokens_user_id": `
+      CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user_id 
+      ON refresh_tokens(user_id);
+    `,
+		"idx_refresh_tokens_expires": `
+      CREATE INDEX IF NOT EXISTS idx_refresh_tokens_expires 
+      ON refresh_tokens(expires_at);
+    `,
+		"idx_refresh_tokens_hash": `
+      CREATE INDEX IF NOT EXISTS idx_refresh_tokens_hash 
+      ON refresh_tokens(token_hash);
+    `, // ← ADD THIS ONE!
+
+		// Users table already has automatic indexes on:
+		// - id (PRIMARY KEY)
+		// - email (UNIQUE constraint)
+	}
+
+	// Loop through indexes map and conditionally create non-existent indexes
+	for indexName, createQuery := range indexes {
+		_, err := DB.Exec(createQuery)
+		if err != nil {
+			log.Printf("⚠️ Failed to create index '%s': %v", indexName, err)
+		} else {
+			log.Printf("☑️ Index '%s' created successfully", indexName)
+		}
+	}
 }

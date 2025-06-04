@@ -61,6 +61,25 @@ export interface AuthVerificationResponse {
   error?: string;
 }
 
+export interface ResetPasswordFormProps {
+  token: string;
+  isLoading: boolean;
+  setIsLoading: (loading: boolean) => void;
+  errors: Record<string, string>;
+  setErrors: (errors: Record<string, string>) => void;
+  setIsSuccess: (success: boolean) => void;
+}
+
+export interface ForgotPasswordFormProps {
+  isLoading: boolean;
+  setIsLoading: (loading: boolean) => void;
+  message: string;
+  setMessage: (message: string) => void;
+  error: string;
+  setError: (error: string) => void;
+  setIsSuccess: (success: boolean) => void;
+}
+
 /* -- API -- */
 export type RequestData =
   | Record<string, unknown>

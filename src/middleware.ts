@@ -6,7 +6,12 @@ const protectedRoutes = ["/account"];
 // Public routes that don't require authentication
 // but when the user is logged in, they will be
 // redirected to the dashboard
-const publicRoutes = ["/login", "/register"];
+const publicRoutes = [
+  "/login",
+  "/register",
+  "/forgot-password",
+  "/reset-password",
+];
 
 // Check if server is available first
 async function isServerAvailable(): Promise<boolean> {

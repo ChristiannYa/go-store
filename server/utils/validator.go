@@ -68,6 +68,7 @@ func validatePasswordComplexity(fl validator.FieldLevel) bool {
 	return hasLower && hasUpper && hasDigit && hasSpecial
 }
 
+// Validates the inputs of a struct
 func ValidateInputs(s any) map[string]string {
 	err := validate.Struct(s)
 	if err == nil {

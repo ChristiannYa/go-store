@@ -207,7 +207,13 @@ func (s *TokenService) RevokeRefreshToken(refreshTokenString string) error {
 	tokenHash := hex.EncodeToString(hasher.Sum(nil))
 
 	// Revoke only the specific token by its hash
-	query := `UPDATE refresh_tokens SET is_revoked = TRUE WHERE token_hash = $1 AND user_id = $2`
+	query := `
+		UPDATE refresh_tokens 
+		SET is_revoked = TRUE 
+		WHERE token_hash = $1 
+		AND user_id = $2
+	`
+
 	result, err := s.db.Exec(query, tokenHash, claims.UserID)
 	if err != nil {
 		return fmt.Errorf("failed to revoke refresh token: %w", err)
