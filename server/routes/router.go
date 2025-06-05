@@ -29,5 +29,5 @@ func SetupAuthRoutes(mux *http.ServeMux) {
 }
 
 func SetupUserRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("GET /api/user/me", middleware.AuthMiddleware(user.GetCurrentUser))
+	mux.HandleFunc("GET /api/user/me", middleware.AuthMiddleware(user.GetMe))
 }

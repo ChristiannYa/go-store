@@ -6,10 +6,9 @@ import (
 	"database/sql"
 	"encoding/hex"
 	"fmt"
+	"go-auth/server/constants"
 	"time"
 )
-
-const ResetTokenDuration = 10 * time.Minute
 
 type PasswordResetService struct {
 	db *sql.DB
@@ -33,7 +32,7 @@ func (s *PasswordResetService) GenerateResetToken(userID int) (string, error) {
 	tokenHash := hex.EncodeToString(hasher.Sum(nil))
 
 	// Store in database
-	expiresAt := time.Now().Add(ResetTokenDuration)
+	expiresAt := time.Now().Add(constants.AccessTokenDuration)
 	query := `
 		INSERT INTO password_reset_tokens (user_id, token_hash, expires_at)
 		VALUES ($1, $2, $3)

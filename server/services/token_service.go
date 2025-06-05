@@ -6,20 +6,13 @@ import (
 	"database/sql"
 	"encoding/hex"
 	"fmt"
+	"go-auth/server/constants"
 	"go-auth/server/models"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-)
-
-const (
-	AccessTokenDuration = 15 * time.Minute // 15 minutes
-	// AccessTokenDuration = 10 * time.Second // TEST
-
-	RefreshTokenDuration = 90 * 24 * time.Hour // 90 days
-	// RefreshTokenDuration = 1 * time.Minute // TEST
 )
 
 type TokenService struct {
@@ -30,14 +23,13 @@ func NewTokenService(db *sql.DB) *TokenService {
 	return &TokenService{db: db}
 }
 
-/* (short-lived, 15 minutes) */
-// Generates an access token
+// Generates a short-lived access token
 func (s *TokenService) GenerateAccessToken(userID int) (string, error) {
 	claims := models.AccessTokenClaims{
 		UserID: userID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			/* JWT expiration (inside the token) */
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(AccessTokenDuration)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(constants.AccessTokenDuration)),
 
 			IssuedAt: jwt.NewNumericDate(time.Now()),
 		},
@@ -48,7 +40,7 @@ func (s *TokenService) GenerateAccessToken(userID int) (string, error) {
 }
 
 /*
-  - Generates a refresh token (long-lived, 30 days) and stores
+  - Generates a long-lived refresh token and stores
     its hash in the database
 */
 func (s *TokenService) GenerateRefreshToken(
@@ -64,14 +56,14 @@ func (s *TokenService) GenerateRefreshToken(
 	}
 	tokenID := hex.EncodeToString(tokenIDBytes)
 
-	expiresAt := time.Now().Add(RefreshTokenDuration) /* 30 days */
+	expiresAt := time.Now().Add(constants.RefreshTokenDuration)
 
 	// Create JWT claims with expiration
 	claims := models.RefreshTokenClaims{
 		UserID:  userID,
 		TokenID: tokenID,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(expiresAt), /* JWT internal expiration */
+			ExpiresAt: jwt.NewNumericDate(expiresAt),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
 	}
@@ -118,10 +110,10 @@ func (s *TokenService) GenerateRefreshToken(
 // Stores the JWT refresh token in an HTTP-only cookie
 func (s *TokenService) SetRefreshTokenCookie(w http.ResponseWriter, refreshToken string) {
 	cookie := &http.Cookie{
-		Name:     "refresh_token",
+		Name:     constants.RefreshTokenCookieName,
 		Value:    refreshToken,
 		Path:     "/",
-		Expires:  time.Now().Add(RefreshTokenDuration),
+		Expires:  time.Now().Add(constants.RefreshTokenDuration),
 		HttpOnly: true,
 		Secure:   os.Getenv("NODE_ENV") == "production",
 		SameSite: http.SameSiteLaxMode,
@@ -132,7 +124,7 @@ func (s *TokenService) SetRefreshTokenCookie(w http.ResponseWriter, refreshToken
 // Removes the refresh token cookie (for logout)
 func (s *TokenService) ClearRefreshTokenCookie(w http.ResponseWriter) {
 	cookie := &http.Cookie{
-		Name:     "refresh_token",
+		Name:     constants.RefreshTokenCookieName,
 		Value:    "",
 		Path:     "/",
 		Expires:  time.Unix(0, 0),
