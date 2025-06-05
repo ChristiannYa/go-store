@@ -20,6 +20,10 @@ func VerifyToken(w http.ResponseWriter, r *http.Request) {
 
 	tokenService := services.NewTokenService(config.DB)
 
+	/*
+		This query runs on every authentication request,
+		it needs index on refresh_tokens.token_hash
+	*/
 	isValid := tokenService.ValidateRefreshToken(cookie.Value)
 
 	w.WriteHeader(http.StatusOK)

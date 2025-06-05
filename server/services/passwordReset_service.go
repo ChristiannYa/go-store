@@ -56,8 +56,10 @@ func (s *PasswordResetService) ValidateResetToken(token string) (int, error) {
 	var userID int
 	query := `
 		SELECT user_id FROM password_reset_tokens
-		WHERE token_hash = $1 AND expires_at > NOW() AND used = FALSE
-	`
+		WHERE token_hash = $1 
+		AND expires_at > NOW() 
+		AND used = FALSE
+	` /* Needs index on password_reset_tokens.token_hash */
 	err := s.db.QueryRow(query, tokenHash).Scan(&userID)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -74,7 +76,11 @@ func (s *PasswordResetService) MarkTokenAsUsed(token string) error {
 	hasher.Write([]byte(token))
 	tokenHash := hex.EncodeToString(hasher.Sum(nil))
 
-	query := `UPDATE password_reset_tokens SET used = TRUE WHERE token_hash = $1`
+	query := `
+		UPDATE password_reset_tokens 
+		SET used = TRUE 
+		WHERE token_hash = $1
+	` /* Needs index on password_reset_tokens.token_hash */
 	_, err := s.db.Exec(query, tokenHash)
 	return err
 }

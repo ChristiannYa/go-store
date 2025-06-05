@@ -43,7 +43,7 @@ func ConnectDB() {
 	CreateDBIfNotExists(config)
 	connectToDatabase(config)
 	CreateTables()
-	createIndexes()
+	CreateIndexes()
 }
 
 // Ensures all required environment variables are set
