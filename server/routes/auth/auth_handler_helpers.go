@@ -43,6 +43,7 @@ func WriteSuccessResponse(
 		Success: true,
 		Message: message,
 	}
+	/* If access token is provided, add it to the response */
 	if len(accessToken) > 0 && accessToken[0] != "" {
 		response.AccessToken = accessToken[0]
 	}

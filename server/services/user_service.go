@@ -17,7 +17,9 @@ func NewUserService(db *sql.DB) *UserService {
 	return &UserService{db: db}
 }
 
-func (s *UserService) CreateUser(req *models.RegisterRequest) (int, error) {
+func (s *UserService) CreateUser(req *models.RegisterRequest) (
+	int, error,
+) {
 	hashedPassword, err := bcrypt.GenerateFromPassword(
 		[]byte(req.Password),
 		bcrypt.DefaultCost,
@@ -58,7 +60,13 @@ func (s *UserService) CreateUser(req *models.RegisterRequest) (int, error) {
 // Simple user existence by email check
 func (s *UserService) UserEmailExists(email string) (bool, error) {
 	var exists bool
-	query := `SELECT EXISTS(SELECT 1 FROM users WHERE email = $1)`
+	query := `
+		SELECT EXISTS(
+			SELECT 1 
+			FROM users 
+			WHERE email = $1
+		)
+	`
 
 	err := s.db.QueryRow(query, email).Scan(&exists)
 	if err != nil {
@@ -70,7 +78,11 @@ func (s *UserService) UserEmailExists(email string) (bool, error) {
 
 // Select user login details by email
 func (s *UserService) SelectUserLoginDetails(email string) (*models.UserLogin, error) {
-	query := `SELECT id, email, password_hash FROM users WHERE email = $1`
+	query := `
+		SELECT id, email, password_hash 
+		FROM users 
+		WHERE email = $1
+	`
 	var user models.UserLogin
 	err := s.db.QueryRow(query, email).Scan(&user.ID, &user.Email, &user.PasswordHash)
 	if err != nil {
