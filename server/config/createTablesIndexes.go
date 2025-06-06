@@ -29,7 +29,6 @@ func CreateIndexes() {
 	// Loop through indexes map and conditionally create non-existent indexes
 	for indexName, createQuery := range indexes {
 		if indexExists(indexName) {
-			log.Printf("ℹ️ Index '%s' already exists", indexName)
 			continue
 		}
 

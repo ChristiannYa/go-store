@@ -91,7 +91,7 @@ func connectToDatabase(config DBConfig) {
 		log.Fatal("❌ Failed to ping database:", err)
 	}
 
-	log.Println("✅ Database connected successfully")
+	log.Println("🔌 Database connected successfully")
 }
 
 func CloseDB() {

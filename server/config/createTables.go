@@ -54,7 +54,6 @@ func CreateTables() {
 	// Loop through tables map and conditionally create non-existent tables
 	for tableName, createQuery := range tables {
 		if tableExists(tableName) {
-			log.Printf("ℹ️ Table '%s' already exists", tableName)
 			continue
 		}
 
