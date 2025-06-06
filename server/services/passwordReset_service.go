@@ -32,7 +32,7 @@ func (s *PasswordResetService) GenerateResetToken(userID int) (string, error) {
 	tokenHash := hex.EncodeToString(hasher.Sum(nil))
 
 	// Store in database
-	expiresAt := time.Now().Add(constants.AccessTokenDuration)
+	expiresAt := time.Now().Add(constants.PasswordResetDuration)
 	query := `
 		INSERT INTO password_reset_tokens (user_id, token_hash, expires_at)
 		VALUES ($1, $2, $3)
@@ -82,4 +82,22 @@ func (s *PasswordResetService) MarkTokenAsUsed(token string) error {
 	` /* Needs index on password_reset_tokens.token_hash */
 	_, err := s.db.Exec(query, tokenHash)
 	return err
+}
+
+func (s *PasswordResetService) CleanupExpiredTokens() error {
+	query := `
+		DELETE FROM password_reset_tokens
+		WHERE 
+			-- Delete expired tokens older than 2 weeks
+			(expires_at < NOW() AND created_at < NOW() - INTERVAL '14 days')
+			OR 
+			-- Delete used tokens older than 2 weeks
+			(used = TRUE AND created_at < NOW() - INTERVAL '14 days')
+	`
+
+	_, err := s.db.Exec(query)
+	if err != nil {
+		return fmt.Errorf("failed to cleanup password reset tokens: %w", err)
+	}
+	return nil
 }

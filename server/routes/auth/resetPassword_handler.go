@@ -34,7 +34,7 @@ func ResetPassword(w http.ResponseWriter, r *http.Request) {
 
 	resetService := services.NewPasswordResetService(config.DB)
 	userService := services.NewUserService(config.DB)
-	emailService := services.NewEmailService()
+	emailService := services.NewPswEmailService()
 
 	// Validate reset token
 	userID, err := resetService.ValidateResetToken(req.Token)
@@ -84,7 +84,14 @@ func ResetPassword(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Mark token as used
-	resetService.MarkTokenAsUsed(req.Token)
+	if err := resetService.MarkTokenAsUsed(req.Token); err != nil {
+		WriteMessageResponse(
+			w,
+			http.StatusInternalServerError,
+			"Failed to mark token as used",
+		)
+		return
+	}
 
 	// Send confirmation email
 	go func() {

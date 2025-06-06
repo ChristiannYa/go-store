@@ -15,7 +15,7 @@ func SetupRoutes(mux *http.ServeMux) {
 }
 
 func SetupApiRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("/api/health", middleware.JSONHandler(api.Health))
+	mux.HandleFunc("GET /api/health", middleware.JSONHandler(api.Health))
 }
 
 func SetupAuthRoutes(mux *http.ServeMux) {

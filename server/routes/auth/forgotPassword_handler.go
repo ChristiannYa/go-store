@@ -34,7 +34,7 @@ func ForgotPassword(w http.ResponseWriter, r *http.Request) {
 
 	userService := services.NewUserService(config.DB)
 	resetService := services.NewPasswordResetService(config.DB)
-	emailService := services.NewEmailService()
+	emailService := services.NewPswEmailService()
 
 	// Get user by email
 	user, err := userService.SelectUserLoginDetails(req.Email)
