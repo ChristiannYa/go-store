@@ -9,8 +9,6 @@ import (
 )
 
 func VerifyToken(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
 	cookie, err := r.Cookie(constants.RefreshTokenCookieName)
 	if err != nil {
 		/* Only checks for auth status, not requiring it */

@@ -11,8 +11,7 @@ import (
 )
 
 func ForgotPassword(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
+	// Check valid JSON format
 	var req models.ForgotPasswordRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		WriteMessageResponse(
@@ -23,6 +22,7 @@ func ForgotPassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Validate inputs
 	if errors := utils.ValidateInputs(req); errors != nil {
 		WriteFieldErrors(
 			w,

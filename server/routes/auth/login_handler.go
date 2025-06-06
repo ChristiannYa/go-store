@@ -12,9 +12,7 @@ import (
 )
 
 func Login(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	// Check for JSON format
+	// Check for valid JSON format
 	var req models.LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		WriteMessageResponse(

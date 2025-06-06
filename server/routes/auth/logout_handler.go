@@ -8,8 +8,6 @@ import (
 )
 
 func Logout(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
 	tokenService := services.NewTokenService(config.DB)
 
 	// Get refresh token from cookie

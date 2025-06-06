@@ -16,8 +16,6 @@ const UserIDKey contextKey = "userID"
 
 func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-
 		// Get Authorization header
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" {

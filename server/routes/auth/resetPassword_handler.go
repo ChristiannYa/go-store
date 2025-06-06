@@ -13,8 +13,6 @@ import (
 )
 
 func ResetPassword(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
 	var req models.ResetPasswordRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		WriteMessageResponse(
