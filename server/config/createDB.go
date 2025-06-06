@@ -4,11 +4,16 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"regexp"
 
 	_ "github.com/lib/pq"
 )
 
 func CreateDBIfNotExists(config DBConfig) {
+	if !isValidDatabaseName(config.DBName) {
+		log.Fatal("❌ Invalid database name:", config.DBName)
+	}
+
 	// Connect to postgres default database to create the project's database
 	dsn := config.buildDSN("postgres")
 
@@ -20,7 +25,13 @@ func CreateDBIfNotExists(config DBConfig) {
 
 	// Check if database exists
 	var exists bool
-	query := "SELECT EXISTS(SELECT datname FROM pg_catalog.pg_database WHERE datname = $1)"
+	query := `
+		SELECT EXISTS(
+			SELECT datname 
+			FROM pg_catalog.pg_database 
+			WHERE datname = $1
+		)
+	`
 	err = db.QueryRow(query, config.DBName).Scan(&exists)
 	if err != nil {
 		log.Fatal("❌ Failed to check if database exists:", err)
@@ -37,4 +48,11 @@ func CreateDBIfNotExists(config DBConfig) {
 	} else {
 		log.Printf("ℹ️ Database '%s' already exists.", config.DBName)
 	}
+}
+
+func isValidDatabaseName(name string) bool {
+	// PostgreSQL identifier rules: start with letter/underscore,
+	// contain only letters, digits, underscores, max 63 chars
+	matched, _ := regexp.MatchString(`^[a-zA-Z_][a-zA-Z0-9_]*$`, name)
+	return matched && len(name) <= 63
 }

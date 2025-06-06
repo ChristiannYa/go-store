@@ -109,20 +109,29 @@ func (s *TokenService) GenerateRefreshToken(
 /* Cookie expiration has to match JWT expiration */
 // Stores the JWT refresh token in an HTTP-only cookie
 func (s *TokenService) SetRefreshTokenCookie(w http.ResponseWriter, refreshToken string) {
+	isProduction := os.Getenv("GO_ENV") == "production"
+
 	cookie := &http.Cookie{
 		Name:     constants.RefreshTokenCookieName,
 		Value:    refreshToken,
 		Path:     "/",
 		Expires:  time.Now().Add(constants.RefreshTokenDuration),
 		HttpOnly: true,
-		Secure:   os.Getenv("NODE_ENV") == "production",
-		SameSite: http.SameSiteLaxMode,
+		Secure:   isProduction,
+		SameSite: func() http.SameSite {
+			if isProduction {
+				return http.SameSiteStrictMode
+			}
+			return http.SameSiteLaxMode
+		}(),
 	}
 	http.SetCookie(w, cookie)
 }
 
 // Removes the refresh token cookie (for logout)
 func (s *TokenService) ClearRefreshTokenCookie(w http.ResponseWriter) {
+	isProduction := os.Getenv("GO_ENV") == "production"
+
 	cookie := &http.Cookie{
 		Name:     constants.RefreshTokenCookieName,
 		Value:    "",
@@ -130,8 +139,13 @@ func (s *TokenService) ClearRefreshTokenCookie(w http.ResponseWriter) {
 		Expires:  time.Unix(0, 0),
 		HttpOnly: true,
 		MaxAge:   -1,
-		Secure:   os.Getenv("NODE_ENV") == "production",
-		SameSite: http.SameSiteLaxMode,
+		Secure:   isProduction,
+		SameSite: func() http.SameSite {
+			if isProduction {
+				return http.SameSiteStrictMode
+			}
+			return http.SameSiteLaxMode
+		}(),
 	}
 	http.SetCookie(w, cookie)
 }
@@ -160,20 +174,20 @@ func (s *TokenService) RefreshAccessToken(refreshTokenString string) (
 	return s.GenerateAccessToken(claims.UserID)
 }
 
-func (s *TokenService) ValidateRefreshToken(refreshTokenString string) bool {
+func (s *TokenService) ValidateRefreshToken(refreshTokenString string) (bool, error) {
 	// Parse and validate JWT
 	claims, err := s.parseRefreshToken(refreshTokenString)
 	if err != nil {
-		return false
+		return false, fmt.Errorf("invalid refresh token: %w", err)
 	}
 
 	// Validate in database
 	isValid, err := s.validateRefreshTokenInDB(refreshTokenString, claims.UserID)
 	if err != nil {
-		return false
+		return false, fmt.Errorf("failed to validate refresh token: %w", err)
 	}
 
-	return isValid
+	return isValid, nil
 }
 
 func (s *TokenService) RevokeRefreshToken(refreshTokenString string) error {

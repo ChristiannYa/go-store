@@ -39,7 +39,6 @@ func (s *TokenService) parseRefreshToken(refreshTokenString string) (*models.Ref
 			return s.getRefreshTokenSecret(), nil
 		},
 	)
-
 	if err != nil {
 		return nil, fmt.Errorf("invalid refresh token: %w", err)
 	}

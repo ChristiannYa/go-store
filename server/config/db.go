@@ -6,10 +6,12 @@ import (
 	"log"
 	"os"
 
+	"net/url"
+
 	_ "github.com/lib/pq"
 )
 
-// Create a global variable for the database connection
+// Global variable for database connection
 var DB *sql.DB
 
 type DBConfig struct {
@@ -22,9 +24,15 @@ type DBConfig struct {
 }
 
 // Creates a PostgreSQL connection string
-func (config DBConfig) buildDSN(dbname string) string {
+func (config DBConfig) buildDSN(dbName string) string {
 	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
-		config.Host, config.Port, config.User, config.Password, dbname, config.SSLMode)
+		url.QueryEscape(config.Host),
+		url.QueryEscape(config.Port),
+		url.QueryEscape(config.User),
+		url.QueryEscape(config.Password),
+		url.QueryEscape(dbName),
+		url.QueryEscape(config.SSLMode),
+	)
 }
 
 // Initializes the database connection and setup
@@ -88,7 +96,12 @@ func connectToDatabase(config DBConfig) {
 
 func CloseDB() {
 	if DB != nil {
-		DB.Close()
-		log.Println("🔒 Database connection closed")
+		if err := DB.Close(); err != nil {
+			log.Printf("⚠️ Error closing database connection: %v", err)
+		} else {
+			log.Println("🔒 Database connection closed")
+		}
+		// Clear the global variable
+		DB = nil
 	}
 }

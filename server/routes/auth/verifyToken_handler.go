@@ -5,6 +5,7 @@ import (
 	"go-auth/server/config"
 	"go-auth/server/constants"
 	"go-auth/server/services"
+	"log"
 	"net/http"
 )
 
@@ -21,11 +22,18 @@ func VerifyToken(w http.ResponseWriter, r *http.Request) {
 
 	tokenService := services.NewTokenService(config.DB)
 
-	/*
-		This query runs on every authentication request,
-		it needs index on refresh_tokens.token_hash
-	*/
-	isValid := tokenService.ValidateRefreshToken(cookie.Value)
+	/* This query runs on every authentication request,
+	it needs index on refresh_tokens.token_hash */
+	isValid, err := tokenService.ValidateRefreshToken(cookie.Value)
+	if err != nil {
+		log.Printf("Token validation error: %v", err)
+
+		/* For this endpoint, treat validation errors as "not authenticated"
+		rather than server errors, since this is just a status check */
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]bool{"isAuthenticated": false})
+		return
+	}
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]bool{"isAuthenticated": isValid})
