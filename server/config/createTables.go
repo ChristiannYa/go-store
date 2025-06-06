@@ -76,6 +76,7 @@ func createTable(tableName, query string) {
 
 func tableExists(tableName string) bool {
 	var exists bool
+
 	checkQuery := `
     SELECT EXISTS (
 			SELECT FROM information_schema.tables 

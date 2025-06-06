@@ -28,11 +28,36 @@ func CreateIndexes() {
 
 	// Loop through indexes map and conditionally create non-existent indexes
 	for indexName, createQuery := range indexes {
+		if indexExists(indexName) {
+			log.Printf("ℹ️ Index '%s' already exists", indexName)
+			continue
+		}
+
 		_, err := DB.Exec(createQuery)
 		if err != nil {
 			log.Printf("⚠️ Failed to create index '%s': %v", indexName, err)
 		} else {
-			log.Printf("☑️ Index '%s' created successfully", indexName)
+			log.Printf("☑️ Index '%s' created successfully!", indexName)
 		}
 	}
+}
+
+func indexExists(indexName string) bool {
+	var exists bool
+
+	checkQuery := `
+		SELECT EXISTS (
+			SELECT 1 FROM pg_indexes 
+			WHERE schemaname = 'public' 
+			AND indexname = $1
+		);
+	`
+
+	err := DB.QueryRow(checkQuery, indexName).Scan(&exists)
+	if err != nil {
+		log.Printf("⚠️ Failed to check if index '%s' exists: %v", indexName, err)
+		return false
+	}
+
+	return exists
 }
