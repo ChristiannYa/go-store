@@ -18,9 +18,12 @@ func NewUserService(db *sql.DB) *UserService {
 }
 
 func (s *UserService) CreateUser(req *models.RegisterRequest) (int, error) {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword(
+		[]byte(req.Password),
+		bcrypt.DefaultCost,
+	)
 	if err != nil {
-		return 0, fmt.Errorf("failed to hash password: %w", err)
+		return 0, fmt.Errorf("failed to hash bcrypt password: %w", err)
 	}
 
 	insertUserQuery := `

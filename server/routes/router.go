@@ -21,8 +21,8 @@ func SetupApiRoutes(mux *http.ServeMux) {
 func SetupAuthRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/auth/register", auth.Register)
 	mux.HandleFunc("POST /api/auth/login", auth.Login)
-	mux.HandleFunc("POST /api/auth/refresh", auth.RefreshToken)
 	mux.HandleFunc("POST /api/auth/logout", auth.Logout)
+	mux.HandleFunc("POST /api/auth/refresh", auth.RefreshToken)
 	mux.HandleFunc("POST /api/auth/verify", auth.VerifyToken)
 	mux.HandleFunc("POST /api/auth/forgot-password", auth.ForgotPassword)
 	mux.HandleFunc("POST /api/auth/reset-password", auth.ResetPassword)

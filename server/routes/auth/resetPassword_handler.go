@@ -17,16 +17,20 @@ func ResetPassword(w http.ResponseWriter, r *http.Request) {
 
 	var req models.ResetPasswordRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(models.AuthResponse{
-			Success: false,
-			Message: "Invalid JSON format",
-		})
+		WriteMessageResponse(
+			w,
+			http.StatusBadRequest,
+			"Invalid JSON format",
+		)
 		return
 	}
 
 	if errors := utils.ValidateInputs(req); errors != nil {
-		writeErrorResponse(w, http.StatusBadRequest, errors)
+		WriteFieldErrors(
+			w,
+			http.StatusBadRequest,
+			errors,
+		)
 		return
 	}
 
@@ -37,44 +41,47 @@ func ResetPassword(w http.ResponseWriter, r *http.Request) {
 	// Validate reset token
 	userID, err := resetService.ValidateResetToken(req.Token)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(models.AuthResponse{
-			Success: false,
-			Message: "Invalid or expired reset token",
-		})
+		WriteMessageResponse(
+			w,
+			http.StatusBadRequest,
+			"Invalid or expired reset token",
+		)
 		return
 	}
 
 	// Get user email by ID for confirmation
 	user, err := userService.GetUserByID(userID)
 	if err != nil || user == nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(models.AuthResponse{
-			Success: false,
-			Message: "User not found",
-		})
+		WriteMessageResponse(
+			w,
+			http.StatusInternalServerError,
+			"User not found",
+		)
 		return
 	}
 
 	// Hash new password
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword(
+		[]byte(req.Password),
+		bcrypt.DefaultCost,
+	)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(models.AuthResponse{
-			Success: false,
-			Message: "Failed to process password",
-		})
+		WriteMessageResponse(
+			w,
+			http.StatusInternalServerError,
+			"Failed to hash bcrypt password",
+		)
 		return
 	}
 
 	// Update user password
 	err = userService.UpdatePassword(userID, string(hashedPassword))
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(models.AuthResponse{
-			Success: false,
-			Message: "Failed to update password",
-		})
+		WriteMessageResponse(
+			w,
+			http.StatusInternalServerError,
+			"Failed to update password",
+		)
 		return
 	}
 
@@ -90,9 +97,9 @@ func ResetPassword(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// Success reponse regardless of email sending status
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(models.AuthResponse{
-		Success: true,
-		Message: "Password reset successfully",
-	})
+	WriteSuccessResponse(
+		w,
+		http.StatusOK,
+		"Password reset successfully",
+	)
 }

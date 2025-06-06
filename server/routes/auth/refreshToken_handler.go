@@ -1,10 +1,8 @@
 package auth
 
 import (
-	"encoding/json"
 	"go-auth/server/config"
 	"go-auth/server/constants"
-	"go-auth/server/models"
 	"go-auth/server/services"
 	"net/http"
 )
@@ -15,11 +13,11 @@ func RefreshToken(w http.ResponseWriter, r *http.Request) {
 	// Get refresh token from cookie
 	cookie, err := r.Cookie(constants.RefreshTokenCookieName)
 	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(models.AuthResponse{
-			Success: false,
-			Message: "No refresh token found",
-		})
+		WriteMessageResponse(
+			w,
+			http.StatusUnauthorized,
+			"No refresh token found",
+		)
 		return
 	}
 
@@ -31,19 +29,19 @@ func RefreshToken(w http.ResponseWriter, r *http.Request) {
 		// Clear invalid refresh token cookie
 		tokenService.ClearRefreshTokenCookie(w)
 
-		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(models.AuthResponse{
-			Success: false,
-			Message: "Invalid or expired refresh token",
-		})
+		WriteMessageResponse(
+			w,
+			http.StatusUnauthorized,
+			"Invalid or expired refresh token",
+		)
 		return
 	}
 
 	// Success response with new access token
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(models.AuthResponse{
-		Success:     true,
-		Message:     "Token refreshed successfully",
-		AccessToken: accessToken,
-	})
+	WriteSuccessResponse(
+		w,
+		http.StatusOK,
+		"Token refreshed successfully",
+		accessToken,
+	)
 }

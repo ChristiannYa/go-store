@@ -15,54 +15,68 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	// Check for JSON format
 	var req models.RegisterRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(models.AuthResponse{
-			Success: false,
-			Message: "Invalid JSON format",
-		})
+		WriteMessageResponse(
+			w,
+			http.StatusBadRequest,
+			"Invalid JSON format",
+		)
 		return
 	}
 
 	// Validate input
 	if errors := utils.ValidateInputs(req); errors != nil {
-		writeErrorResponse(w, http.StatusBadRequest, errors)
+		WriteFieldErrors(
+			w,
+			http.StatusBadRequest,
+			errors,
+		)
 		return
 	}
 
 	userService := services.NewUserService(config.DB)
 	tokenService := services.NewTokenService(config.DB)
 
-	// Check if user already exists
+	// Check if user email already exists
 	userExists, err := userService.UserEmailExists(req.Email)
 	if err != nil {
-		writeErrorResponse(w, http.StatusInternalServerError, map[string]string{
-			"form": "An error occurred during registration",
-		})
+		WriteMessageResponse(
+			w,
+			http.StatusInternalServerError,
+			"An error occurred during registration",
+		)
 		return
 	}
 
 	if userExists {
-		writeErrorResponse(w, http.StatusConflict, map[string]string{
-			"email": "Email already registered",
-		})
+		WriteFieldErrors(
+			w,
+			http.StatusConflict,
+			map[string]string{
+				"email": "Email already registered",
+			},
+		)
 		return
 	}
 
 	// Create new user
 	userID, err := userService.CreateUser(&req)
 	if err != nil {
-		writeErrorResponse(w, http.StatusInternalServerError, map[string]string{
-			"form": "An error occurred during registration",
-		})
+		WriteMessageResponse(
+			w,
+			http.StatusInternalServerError,
+			"An error occurred during registration",
+		)
 		return
 	}
 
 	// Generate access token
 	accessToken, err := tokenService.GenerateAccessToken(userID)
 	if err != nil {
-		writeErrorResponse(w, http.StatusInternalServerError, map[string]string{
-			"form": "Failed to generate access token",
-		})
+		WriteMessageResponse(
+			w,
+			http.StatusInternalServerError,
+			"Failed to generate access token",
+		)
 		return
 	}
 
@@ -71,9 +85,11 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	ipAddress := utils.GetClientIP(r)
 	refreshToken, err := tokenService.GenerateRefreshToken(userID, deviceInfo, ipAddress)
 	if err != nil {
-		writeErrorResponse(w, http.StatusInternalServerError, map[string]string{
-			"form": "Failed to generate refresh token",
-		})
+		WriteMessageResponse(
+			w,
+			http.StatusInternalServerError,
+			"Failed to generate refresh token",
+		)
 		return
 	}
 
@@ -81,10 +97,10 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	tokenService.SetRefreshTokenCookie(w, refreshToken)
 
 	// Success response
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(models.AuthResponse{
-		Success:     true,
-		Message:     "Registration successful",
-		AccessToken: accessToken,
-	})
+	WriteSuccessResponse(
+		w,
+		http.StatusCreated,
+		"User registered successfully",
+		accessToken,
+	)
 }

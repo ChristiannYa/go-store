@@ -40,10 +40,6 @@ type AuthResponse struct {
 	AccessToken string            `json:"accessToken,omitempty"`
 }
 
-type UserMeResponse struct {
-	User *User `json:"user,omitempty"`
-}
-
 type ResetPasswordRequest struct {
 	Token           string `json:"token" validate:"required"`
 	Password        string `json:"password" validate:"required,password_complexity"`

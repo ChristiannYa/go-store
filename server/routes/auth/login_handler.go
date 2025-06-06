@@ -17,17 +17,17 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	// Check for JSON format
 	var req models.LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(models.AuthResponse{
-			Success: false,
-			Message: "Invalid JSON format",
-		})
+		WriteMessageResponse(
+			w,
+			http.StatusBadRequest,
+			"Invalid JSON format",
+		)
 		return
 	}
 
 	// Validate input
 	if errors := utils.ValidateInputs(req); errors != nil {
-		writeErrorResponse(w, http.StatusBadRequest, errors)
+		WriteFieldErrors(w, http.StatusBadRequest, errors)
 		return
 	}
 
@@ -37,36 +37,48 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	// Get user details: id, email, and password hash
 	user, err := userService.SelectUserLoginDetails(req.Email)
 	if err != nil {
-		writeErrorResponse(w, http.StatusInternalServerError, map[string]string{
-			"form": "An error occurred during login",
-		})
+		WriteMessageResponse(
+			w,
+			http.StatusBadRequest,
+			"An error occurred during login",
+		)
 		return
 	}
 
 	// Check if user exists
 	if user == nil {
-		writeErrorResponse(w, http.StatusBadRequest, map[string]string{
-			// Store error message in the form field for ambiguity
-			"form": "Invalid email or password",
-		})
+		WriteFieldErrors(
+			w,
+			http.StatusBadRequest,
+			/* Store error message in the form field for ambiguity */
+			map[string]string{
+				"form": "Invalid email or password",
+			},
+		)
 		return
 	}
 
 	// Compare passwords
 	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(req.Password)); err != nil {
-		writeErrorResponse(w, http.StatusBadRequest, map[string]string{
-			// Store error message in the form field for ambiguity
-			"form": "Invalid email or password",
-		})
+		WriteFieldErrors(
+			w,
+			http.StatusBadRequest,
+			map[string]string{
+				/* Store error message in the form field for ambiguity */
+				"form": "Invalid email or password",
+			},
+		)
 		return
 	}
 
 	// Generate access token
 	accessToken, err := tokenService.GenerateAccessToken(user.ID)
 	if err != nil {
-		writeErrorResponse(w, http.StatusInternalServerError, map[string]string{
-			"form": "Failed to generate access token",
-		})
+		WriteMessageResponse(
+			w,
+			http.StatusInternalServerError,
+			"Failed to generate access token",
+		)
 		return
 	}
 
@@ -75,9 +87,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	ipAddress := utils.GetClientIP(r)
 	refreshToken, err := tokenService.GenerateRefreshToken(user.ID, deviceInfo, ipAddress)
 	if err != nil {
-		writeErrorResponse(w, http.StatusInternalServerError, map[string]string{
-			"form": "Failed to generate refresh token",
-		})
+		WriteMessageResponse(
+			w,
+			http.StatusInternalServerError,
+			"Failed to generate refresh token",
+		)
 		return
 	}
 
@@ -85,10 +99,10 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	tokenService.SetRefreshTokenCookie(w, refreshToken)
 
 	// Success response
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(models.AuthResponse{
-		Success:     true,
-		Message:     "Login successful",
-		AccessToken: accessToken,
-	})
+	WriteSuccessResponse(
+		w,
+		http.StatusOK,
+		"Login successful",
+		accessToken,
+	)
 }

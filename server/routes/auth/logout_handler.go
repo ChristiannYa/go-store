@@ -1,10 +1,8 @@
 package auth
 
 import (
-	"encoding/json"
 	"go-auth/server/config"
 	"go-auth/server/constants"
-	"go-auth/server/models"
 	"go-auth/server/services"
 	"net/http"
 )
@@ -25,9 +23,9 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	tokenService.ClearRefreshTokenCookie(w)
 
 	// Success response
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(models.AuthResponse{
-		Success: true,
-		Message: "Logged out successfully",
-	})
+	WriteSuccessResponse(
+		w,
+		http.StatusOK,
+		"Logged out successfully",
+	)
 }

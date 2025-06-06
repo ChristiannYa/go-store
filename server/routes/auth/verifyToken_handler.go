@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"encoding/json"
 	"go-auth/server/config"
 	"go-auth/server/constants"
 	"go-auth/server/services"
@@ -15,8 +14,7 @@ func VerifyToken(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie(constants.RefreshTokenCookieName)
 	if err != nil {
 		/* Only checks for auth status, not requiring it */
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(map[string]bool{"isAuthenticated": false})
+		WriteAuthStatusResponse(w, false)
 		return
 	}
 
@@ -29,12 +27,10 @@ func VerifyToken(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Token validation error: %v", err)
 
 		/* For this endpoint, treat validation errors as "not authenticated"
-		rather than server errors, since this is just a status check */
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(map[string]bool{"isAuthenticated": false})
+		instead of server errors, since this is just a status check */
+		WriteAuthStatusResponse(w, false)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]bool{"isAuthenticated": isValid})
+	WriteAuthStatusResponse(w, isValid)
 }

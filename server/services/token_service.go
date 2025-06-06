@@ -39,10 +39,7 @@ func (s *TokenService) GenerateAccessToken(userID int) (string, error) {
 	return token.SignedString(s.getAccessTokenSecret())
 }
 
-/*
-  - Generates a long-lived refresh token and stores
-    its hash in the database
-*/
+// Generates a long-lived refresh token and stores its hash in the database
 func (s *TokenService) GenerateRefreshToken(
 	userID int,
 	deviceInfo,
@@ -54,8 +51,8 @@ func (s *TokenService) GenerateRefreshToken(
 	if _, err := rand.Read(tokenIDBytes); err != nil {
 		return "", fmt.Errorf("failed to generate token ID: %w", err)
 	}
-	tokenID := hex.EncodeToString(tokenIDBytes)
 
+	tokenID := hex.EncodeToString(tokenIDBytes)
 	expiresAt := time.Now().Add(constants.RefreshTokenDuration)
 
 	// Create JWT claims with expiration

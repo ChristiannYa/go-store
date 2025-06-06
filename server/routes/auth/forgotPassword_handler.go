@@ -15,16 +15,20 @@ func ForgotPassword(w http.ResponseWriter, r *http.Request) {
 
 	var req models.ForgotPasswordRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(models.AuthResponse{
-			Success: false,
-			Message: "Invalid JSON format",
-		})
+		WriteMessageResponse(
+			w,
+			http.StatusBadRequest,
+			"Invalid JSON format",
+		)
 		return
 	}
 
 	if errors := utils.ValidateInputs(req); errors != nil {
-		writeErrorResponse(w, http.StatusBadRequest, errors)
+		WriteFieldErrors(
+			w,
+			http.StatusBadRequest,
+			errors,
+		)
 		return
 	}
 
@@ -35,22 +39,22 @@ func ForgotPassword(w http.ResponseWriter, r *http.Request) {
 	// Get user by email
 	user, err := userService.SelectUserLoginDetails(req.Email)
 	if err != nil || user == nil {
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(models.AuthResponse{
-			Success: true,
-			Message: "Password reset email sent to: " + req.Email,
-		})
+		WriteSuccessResponse(
+			w,
+			http.StatusOK,
+			"Password reset email sent to: "+req.Email,
+		)
 		return
 	}
 
 	// Generate reset token
 	resetToken, err := resetService.GenerateResetToken(user.ID)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(models.AuthResponse{
-			Success: false,
-			Message: "Failed to generate reset token",
-		})
+		WriteMessageResponse(
+			w,
+			http.StatusInternalServerError,
+			"Failed to generate reset token",
+		)
 		return
 	}
 
@@ -61,10 +65,10 @@ func ForgotPassword(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	// Always return success (don't reveal email sending service status)
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(models.AuthResponse{
-		Success: true,
-		Message: "Password reset email sent to: " + req.Email,
-	})
+	/* Always return success (don't reveal email sending service status) */
+	WriteSuccessResponse(
+		w,
+		http.StatusOK,
+		"Password reset email sent to: "+req.Email,
+	)
 }
