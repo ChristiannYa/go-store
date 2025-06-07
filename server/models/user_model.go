@@ -46,6 +46,11 @@ type ResetPasswordRequest struct {
 	ConfirmPassword string `json:"confirm_password" validate:"required,eqfield=Password"`
 }
 
-type ForgotPasswordRequest struct {
+type EmailRequest struct {
 	Email string `json:"email" validate:"required,email"`
+}
+
+type VerifyEmailRequest struct {
+	Email string `json:"email" validate:"required,email"`
+	Code  string `json:"code" validate:"required,len=6,number"`
 }

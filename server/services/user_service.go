@@ -102,9 +102,10 @@ func (s *UserService) GetUserByID(userID int) (*models.User, error) {
 		id, 
 		name, 
 		last_name, 
-		email, 
+		email,
+		email_verified, 
 		created_at, 
-		updated_at 
+		updated_at
 		FROM users WHERE id = $1
 	`
 	var user models.User
@@ -113,6 +114,7 @@ func (s *UserService) GetUserByID(userID int) (*models.User, error) {
 		&user.Name,
 		&user.LastName,
 		&user.Email,
+		&user.EmailVerified,
 		&user.CreatedAt,
 		&user.UpdatedAt,
 	)

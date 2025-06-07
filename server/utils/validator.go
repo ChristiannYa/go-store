@@ -87,6 +87,8 @@ func ValidateInputs(s any) map[string]string {
 			message = getFieldDisplayName(field) + " must be at least " + err.Param() + " characters"
 		case "email":
 			message = "Invalid email address"
+		case "number":
+			message = getFieldDisplayName(field) + " must contain only numbers"
 		case "password_complexity":
 			message = "Password must be at least 6 characters and contain at least one uppercase letter, one lowercase letter, one number, and one special character"
 		case "eqfield":

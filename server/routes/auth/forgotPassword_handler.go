@@ -12,7 +12,7 @@ import (
 
 func ForgotPassword(w http.ResponseWriter, r *http.Request) {
 	// Check valid JSON format
-	var req models.ForgotPasswordRequest
+	var req models.EmailRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		WriteMessageResponse(
 			w,

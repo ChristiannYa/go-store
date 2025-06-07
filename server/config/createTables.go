@@ -6,9 +6,10 @@ import (
 )
 
 const (
-	UsersTable               = "users"
-	RefreshTokensTable       = "refresh_tokens"
-	PasswordResetTokensTable = "password_reset_tokens"
+	UsersTable                   = "users"
+	RefreshTokensTable           = "refresh_tokens"
+	PasswordResetTokensTable     = "password_reset_tokens"
+	EmailVerificationTokensTable = "email_verification_tokens"
 )
 
 // Create all application tables
@@ -49,6 +50,17 @@ func CreateTables() {
 				created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 			);
 		`,
+		EmailVerificationTokensTable: `
+      CREATE TABLE IF NOT EXISTS %s (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        verification_code VARCHAR(6) NOT NULL,
+        expires_at TIMESTAMP NOT NULL,
+        attempts INTEGER DEFAULT 0,
+        success BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `,
 	}
 
 	// Loop through tables map and conditionally create non-existent tables

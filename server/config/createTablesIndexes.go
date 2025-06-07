@@ -21,6 +21,12 @@ func CreateIndexes() {
       ON refresh_tokens(token_hash);
     `,
 
+		// Email Verification Token Indexes
+		"idx_email_verification_tokens_user_created": `
+  		CREATE INDEX IF NOT EXISTS idx_email_verification_tokens_user_created
+  		ON email_verification_tokens(user_id, created_at DESC);
+		`,
+
 		// Users table already has automatic indexes on:
 		// - id (PRIMARY KEY)
 		// - email (UNIQUE constraint)

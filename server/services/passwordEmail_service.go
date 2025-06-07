@@ -82,3 +82,25 @@ Go-Auth Team
 	addr := fmt.Sprintf("%s:%s", e.smtpHost, e.smtpPort)
 	return smtp.SendMail(addr, auth, e.fromEmail, []string{to}, []byte(message))
 }
+
+func (e *EmailService) SendVerificationEmail(to, code string) error {
+	auth := smtp.PlainAuth("", e.smtpUsername, e.smtpPassword, e.smtpHost)
+
+	subject := "Email Verification Code"
+	body := fmt.Sprintf(`
+Your email verification code is: %s
+
+This code will expire in %.0f minutes.
+
+If you didn't create an account, please ignore this email.
+
+Best regards,
+Go-Auth Team
+`, code, constants.EmailVerificationDuration.Minutes())
+
+	message := fmt.Sprintf("From: %s\r\nTo: %s\r\nSubject: %s\r\n\r\n%s",
+		e.fromEmail, to, subject, body)
+
+	addr := fmt.Sprintf("%s:%s", e.smtpHost, e.smtpPort)
+	return smtp.SendMail(addr, auth, e.fromEmail, []string{to}, []byte(message))
+}

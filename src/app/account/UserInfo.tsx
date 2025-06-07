@@ -24,17 +24,27 @@ export default function UserInfo() {
       <div className="space-y-3">
         <div className="border-l leading-tight space-y-1 pl-2">
           <label className="font-[500]">Full Name</label>
-          <p className="capitalize opacity-85">
+          <p className="capitalize opacity-80">
             {user.name} {user.last_name}
           </p>
         </div>
         <div className="border-l leading-tight space-y-1 pl-2">
           <label className="font-[500]">Email</label>
-          <p className="opacity-85">{user.email}</p>
+          <p className="opacity-80">{user.email}</p>
+        </div>
+        <div className="border-l leading-tight space-y-1 pl-2">
+          <label className="font-[500]">Email verified</label>
+          <p className="opacity-80">
+            {user.email_verified ? (
+              <span>Verified</span>
+            ) : (
+              <span>Not verified</span>
+            )}
+          </p>
         </div>
         <div className="border-l leading-tight space-y-1 pl-2">
           <label className="font-[500]">Member Since</label>
-          <p className="opacity-85">
+          <p className="opacity-80">
             {new Date(user.created_at).toLocaleDateString()}
           </p>
         </div>
