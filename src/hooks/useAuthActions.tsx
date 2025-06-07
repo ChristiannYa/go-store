@@ -1,9 +1,11 @@
 import { useCallback } from "react";
 import { apiClient } from "@/lib/api";
 import { useTokens } from "@/contexts/TokenContext";
+import { useRouter } from "next/navigation";
 
 export function useAuthActions() {
   const { setAccessToken } = useTokens();
+  const router = useRouter();
 
   const login = useCallback(
     (newAccessToken: string) => {
@@ -19,9 +21,9 @@ export function useAuthActions() {
       console.error("Logout error:", error);
     } finally {
       setAccessToken(null);
-      window.location.href = "/";
+      router.push("/");
     }
-  }, [setAccessToken]);
+  }, [setAccessToken, router]);
 
   return { login, logout };
 }

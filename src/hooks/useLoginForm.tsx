@@ -50,9 +50,6 @@ export function useLoginForm() {
         // Store the access token in the context
         login(data.accessToken);
 
-        // Full page reload
-        // window.location.href = "/";
-
         router.push("/");
       } else if (data.errors) {
         setErrors(data.errors);

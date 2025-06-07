@@ -25,7 +25,7 @@ func SetupAuthRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/auth/refresh", middleware.JSONHandler(auth.RefreshToken))
 	mux.HandleFunc("POST /api/auth/register", middleware.JSONHandler(auth.Register))
 	mux.HandleFunc("POST /api/auth/reset-password", middleware.JSONHandler(auth.ResetPassword))
-	mux.HandleFunc("POST /api/auth/send-email-verification", middleware.JSONHandler(auth.SendVerificationCode))
+	mux.HandleFunc("POST /api/auth/send-verification-code", middleware.JSONHandler(auth.SendVerificationCode))
 	mux.HandleFunc("POST /api/auth/verify-email", middleware.JSONHandler(auth.VerifyEmail))
 	mux.HandleFunc("POST /api/auth/verify", middleware.JSONHandler(auth.VerifyToken))
 }

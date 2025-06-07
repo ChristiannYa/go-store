@@ -19,19 +19,19 @@ export default function Home() {
           <p className="text-lg">Loading...</p>
         ) : !isAuthenticated ? (
           <div className="text-lg text-center flex flex-col gap-y-2">
-            <Link href={"/register"}>
+            <Link href="/register">
               <p className="text-slate-500 hover:text-blue-500 cursor-pointer">
                 Register
               </p>
             </Link>
-            <Link href={"/login"}>
+            <Link href="/login">
               <p className="text-slate-500 hover:text-blue-500 cursor-pointer">
                 Login
               </p>
             </Link>
           </div>
         ) : (
-          <Link href={"/account"}>
+          <Link href="/account">
             <p className="link-slate-500">Account</p>
           </Link>
         )}

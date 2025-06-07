@@ -1,20 +1,21 @@
 "use client";
 
-import { useUserData } from "@/hooks/useUserData";
+import Link from "next/link";
+import { useUser } from "@/contexts/UserContext";
 
 export default function UserInfo() {
-  const { user, isLoading, error } = useUserData();
+  const { user, userIsLoading, userError } = useUser();
 
-  if (isLoading) {
+  if (userIsLoading) {
     return <div className="text-amber-500">Loading user data...</div>;
   }
 
-  if (error) {
+  if (userError) {
     return <div className="text-red-500">Error while fetching user data</div>;
   }
 
   if (!user) {
-    return <div className="text-blue-500">No user data found</div>;
+    return <div className="text-blue-500 bg-white">No user data found</div>;
   }
 
   return (
@@ -34,13 +35,19 @@ export default function UserInfo() {
         </div>
         <div className="border-l leading-tight space-y-1 pl-2">
           <label className="font-[500]">Email verified</label>
-          <p className="opacity-80">
+          <div>
             {user.email_verified ? (
-              <span>Verified</span>
+              <p>✔️</p>
             ) : (
-              <span>Not verified</span>
+              <div>
+                <Link href="/account/verify-email">
+                  <p className="text-blue-500/80 hover:underline inline-block">
+                    Not verified
+                  </p>
+                </Link>
+              </div>
             )}
-          </p>
+          </div>
         </div>
         <div className="border-l leading-tight space-y-1 pl-2">
           <label className="font-[500]">Member Since</label>
