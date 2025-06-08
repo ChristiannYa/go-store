@@ -37,7 +37,7 @@ body {
 }
 
 .form__popup--error__container {
-  @apply bg-red-300 border-red-400 text-red-700 px-3.5 py-2.5 rounded;
+  @apply bg-red-300 border-red-400 text-red-700 text-center px-3.5 py-2.5 rounded;
 }
 
 .form__label {

@@ -61,7 +61,7 @@ export function useLoginForm() {
     } catch (error) {
       console.error("Login error:", error);
       setErrors({
-        form: "An error occurred while logging in. Please try again later.",
+        form: "An server connection error occurred while logging in.",
       });
     } finally {
       setIsLoading(false);
