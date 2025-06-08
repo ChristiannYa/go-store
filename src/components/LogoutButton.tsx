@@ -1,9 +1,9 @@
 "use client";
 
-import { useAuthActions } from "@/hooks/useAuthActions";
+import { useTokens } from "@/contexts/TokenContext";
 
 export default function LogoutButton() {
-  const { logout } = useAuthActions();
+  const { logout } = useTokens();
 
   return (
     <button

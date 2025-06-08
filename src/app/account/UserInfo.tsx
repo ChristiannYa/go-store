@@ -2,12 +2,18 @@
 
 import Link from "next/link";
 import { useUser } from "@/contexts/UserContext";
+import { useTokens } from "@/contexts/TokenContext";
 
 export default function UserInfo() {
   const { user, userIsLoading, userError } = useUser();
+  const { isLoggingOut } = useTokens();
+
+  if (isLoggingOut) {
+    return <div className="text-purple-600">Logging out...</div>;
+  }
 
   if (userIsLoading) {
-    return <div className="text-amber-500">Loading user data...</div>;
+    return <div className="text-blue-500">Loading user data...</div>;
   }
 
   if (userError) {
@@ -15,7 +21,7 @@ export default function UserInfo() {
   }
 
   if (!user) {
-    return <div className="text-blue-500 bg-white">No user data found</div>;
+    return <div className="text-amber-500">No user data found</div>;
   }
 
   return (

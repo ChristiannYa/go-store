@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { RegisterFormData, AuthResponse } from "@/app/definitions";
-import { useAuthActions } from "./useAuthActions";
+import { useTokens } from "@/contexts/TokenContext";
 import { useRouter } from "next/navigation";
 
 export function useRegisterForm() {
@@ -14,7 +14,7 @@ export function useRegisterForm() {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuthActions();
+  const { login } = useTokens();
   const router = useRouter();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

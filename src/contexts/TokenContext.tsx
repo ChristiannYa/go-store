@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import { apiClient } from "@/lib/api";
 import { TokenContextType } from "@/app/definitions";
+import { useRouter } from "next/navigation";
 
 const TokenContext = createContext<TokenContextType | undefined>(undefined);
 
@@ -24,7 +25,10 @@ export const TokenProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isTokenLoading, setIsTokenLoading] = useState(true);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const router = useRouter();
 
   // Token refresh function
   const refreshToken = useCallback(async (): Promise<string | null> => {
@@ -62,7 +66,7 @@ export const TokenProvider: React.FC<{ children: React.ReactNode }> = ({
       } catch (error) {
         console.error("Token initialization failed:", error);
       } finally {
-        setIsLoading(false);
+        setIsTokenLoading(false);
       }
     };
 
@@ -75,11 +79,34 @@ export const TokenProvider: React.FC<{ children: React.ReactNode }> = ({
     apiClient.setTokenRefreshHandler(refreshToken);
   }, [accessToken, refreshToken]);
 
+  const login = useCallback(
+    (newAccessToken: string) => {
+      setAccessToken(newAccessToken);
+      setIsLoggingOut(false);
+    },
+    [setAccessToken]
+  );
+
+  const logout = useCallback(async () => {
+    setIsLoggingOut(true);
+    try {
+      await apiClient.post("/api/auth/logout");
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      setAccessToken(null);
+      router.push("/");
+    }
+  }, [router]);
+
   const contextValue: TokenContextType = {
     accessToken,
-    isLoading,
+    isTokenLoading,
+    isLoggingOut,
     setAccessToken,
     refreshToken,
+    logout,
+    login,
   };
 
   return (

@@ -28,9 +28,13 @@ export function UserProvider({ children }: UserProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [userIsLoading, setUserIsLoading] = useState(true);
   const [userError, setUserError] = useState<string | null>(null);
-  const { accessToken } = useTokens();
+  const { accessToken, isLoggingOut, isTokenLoading } = useTokens();
 
   const fetchUserData = useCallback(async () => {
+    if (isTokenLoading) {
+      return;
+    }
+
     if (!accessToken) {
       setUserIsLoading(false);
       setUser(null);
@@ -55,12 +59,14 @@ export function UserProvider({ children }: UserProviderProps) {
     } finally {
       setUserIsLoading(false);
     }
-  }, [accessToken]);
+  }, [accessToken, isTokenLoading]);
 
-  // Fetch user data when accessToken changes
+  // Main effect for fetching user data
   useEffect(() => {
-    fetchUserData();
-  }, [fetchUserData]);
+    if (!isLoggingOut) {
+      fetchUserData();
+    }
+  }, [fetchUserData, isLoggingOut]);
 
   const value: UserContextType = {
     user,
