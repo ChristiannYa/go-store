@@ -17,7 +17,7 @@ export default function UserInfo() {
   }
 
   if (userError) {
-    return <div className="text-red-500">Error while fetching user data</div>;
+    return <div className="text-red-500">{userError}</div>;
   }
 
   if (!user) {

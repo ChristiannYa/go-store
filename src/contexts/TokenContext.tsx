@@ -27,6 +27,8 @@ export const TokenProvider: React.FC<{ children: React.ReactNode }> = ({
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [isTokenLoading, setIsTokenLoading] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isLogoutSuccessful, setIsLogoutSuccessful] = useState(false);
+  const [logoutError, setLogoutError] = useState<string | null>(null);
 
   const router = useRouter();
 
@@ -89,24 +91,33 @@ export const TokenProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const logout = useCallback(async () => {
     setIsLoggingOut(true);
+    setLogoutError(null);
     try {
       await apiClient.post("/api/auth/logout");
-    } catch (error) {
-      console.error("Logout error:", error);
-    } finally {
+      setIsLogoutSuccessful(true);
       setAccessToken(null);
       router.push("/");
+    } catch (error) {
+      console.error(
+        "A server connextion error occurred while logging out:",
+        error
+      );
+      setLogoutError("A server connection error occurred while logging out");
+      setIsLogoutSuccessful(false);
+      setIsLoggingOut(false);
     }
   }, [router]);
 
   const contextValue: TokenContextType = {
-    accessToken,
-    isTokenLoading,
-    isLoggingOut,
-    setAccessToken,
-    refreshToken,
-    logout,
     login,
+    refreshToken,
+    accessToken,
+    setAccessToken,
+    isTokenLoading,
+    logout,
+    isLoggingOut,
+    isLogoutSuccessful,
+    logoutError,
   };
 
   return (

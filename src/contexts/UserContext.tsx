@@ -28,7 +28,8 @@ export function UserProvider({ children }: UserProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [userIsLoading, setUserIsLoading] = useState(true);
   const [userError, setUserError] = useState<string | null>(null);
-  const { accessToken, isLoggingOut, isTokenLoading } = useTokens();
+  const { accessToken, isLoggingOut, isLogoutSuccessful, isTokenLoading } =
+    useTokens();
 
   const fetchUserData = useCallback(async () => {
     if (isTokenLoading) {
@@ -54,7 +55,7 @@ export function UserProvider({ children }: UserProviderProps) {
       }
     } catch (err) {
       console.error("Error fetching user data:", err);
-      setUserError("Error fetching user data");
+      setUserError("A server error occurred while fetching user data");
       setUser(null);
     } finally {
       setUserIsLoading(false);
@@ -68,14 +69,14 @@ export function UserProvider({ children }: UserProviderProps) {
     }
   }, [fetchUserData, isLoggingOut]);
 
-  // Clear user data immediately when logout starts
+  // Clear user data immediately when logout is successful
   useEffect(() => {
-    if (isLoggingOut) {
+    if (isLoggingOut && isLogoutSuccessful) {
       setUser(null);
       setUserError(null);
       setUserIsLoading(false);
     }
-  }, [isLoggingOut]);
+  }, [isLoggingOut, isLogoutSuccessful]);
 
   const value: UserContextType = {
     user,

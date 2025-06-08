@@ -48,6 +48,8 @@ export interface TokenContextType {
   accessToken: string | null;
   isTokenLoading: boolean;
   isLoggingOut: boolean;
+  isLogoutSuccessful: boolean;
+  logoutError: string | null;
   setAccessToken: (token: string | null) => void;
   refreshToken: () => Promise<string | null>;
   login: (token: string) => void;
