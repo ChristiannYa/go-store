@@ -54,8 +54,13 @@ export function UserProvider({ children }: UserProviderProps) {
         setUserError("Failed to fetch user data");
       }
     } catch (err) {
-      console.error("Error fetching user data:", err);
-      setUserError("A server error occurred while fetching user data");
+      console.error(
+        "A server connection error occurred while fetching user data:",
+        err
+      );
+      setUserError(
+        "A server connection error occurred while fetching user data."
+      );
       setUser(null);
     } finally {
       setUserIsLoading(false);

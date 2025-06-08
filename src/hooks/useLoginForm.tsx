@@ -4,6 +4,7 @@ import { useState } from "react";
 import { LoginFormData, AuthResponse } from "@/app/definitions";
 import { useTokens } from "@/contexts/TokenContext";
 import { useRouter } from "next/navigation";
+import { apiClient } from "@/lib/api";
 
 export function useLoginForm() {
   const [formData, setFormData] = useState<LoginFormData>({
@@ -34,16 +35,10 @@ export function useLoginForm() {
     setErrors({});
 
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-          credentials: "include",
-        }
-      );
-
+      const response = await apiClient.post("/api/auth/login", {
+        email: formData.email,
+        password: formData.password,
+      });
       const data: AuthResponse = await response.json();
 
       if (data.success && data.accessToken) {

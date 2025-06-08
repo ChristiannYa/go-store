@@ -92,16 +92,27 @@ export const TokenProvider: React.FC<{ children: React.ReactNode }> = ({
   const logout = useCallback(async () => {
     setIsLoggingOut(true);
     setLogoutError(null);
+
     try {
-      await apiClient.post("/api/auth/logout");
-      setIsLogoutSuccessful(true);
-      setAccessToken(null);
-      router.push("/");
-    } catch (error) {
-      console.error(
-        "A server connextion error occurred while logging out:",
-        error
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`,
+        {
+          method: "POST",
+          credentials: "include",
+        }
       );
+
+      if (response.ok) {
+        setIsLogoutSuccessful(true);
+        setAccessToken(null);
+        router.push("/");
+      } else {
+        setIsLogoutSuccessful(false);
+        setIsLoggingOut(false);
+        setLogoutError("An error occurred while logging out");
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
       setLogoutError("A server connection error occurred while logging out");
       setIsLogoutSuccessful(false);
       setIsLoggingOut(false);

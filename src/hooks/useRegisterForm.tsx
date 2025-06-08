@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { RegisterFormData, AuthResponse } from "@/app/definitions";
 import { useTokens } from "@/contexts/TokenContext";
-import { useRouter } from "next/navigation";
+import { apiClient } from "@/lib/api";
 
 export function useRegisterForm() {
   const [formData, setFormData] = useState<RegisterFormData>({
@@ -35,15 +36,13 @@ export function useRegisterForm() {
     setErrors({});
 
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/register`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-          credentials: "include",
-        }
-      );
+      const response = await apiClient.post("/api/auth/register", {
+        name: formData.name,
+        last_name: formData.last_name,
+        email: formData.email,
+        password: formData.password,
+        confirm_password: formData.confirm_password,
+      });
 
       const data: AuthResponse = await response.json();
 

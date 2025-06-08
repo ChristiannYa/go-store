@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { ResetPasswordFormProps } from "../definitions";
+import { apiClient } from "@/lib/api";
 
 export default function ResetPasswordForm({
   token,
@@ -42,22 +43,12 @@ export default function ResetPasswordForm({
     setErrors({});
 
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/reset-password`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            token,
-            password: formData.password,
-            confirm_password: formData.confirm_password,
-          }),
-          credentials: "include",
-        }
-      );
-
+      const response = await apiClient.post("/api/auth/reset-password", {
+        token,
+        password: formData.password,
+        confirm_password: formData.confirm_password,
+      });
       const data = await response.json();
-
       if (data.success) {
         setIsSuccess(true);
       } else if (data.errors) {

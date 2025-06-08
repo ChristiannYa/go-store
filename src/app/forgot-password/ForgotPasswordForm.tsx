@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ForgotPasswordFormProps } from "../definitions";
+import { apiClient } from "@/lib/api";
 
 export default function ForgotPasswordForm({
   isLoading,
@@ -18,16 +19,9 @@ export default function ForgotPasswordForm({
     setMessage("");
 
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/forgot-password`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email }),
-          credentials: "include",
-        }
-      );
-
+      const response = await apiClient.post("/api/auth/forgot-password", {
+        email,
+      });
       const data = await response.json();
 
       if (data.success) {
