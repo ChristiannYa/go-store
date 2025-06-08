@@ -13,6 +13,12 @@ export default function ResetPasswordPage() {
 
   const searchParams = useSearchParams();
 
+  /*
+    TODO: Fix issue where when selecting `change email`
+          the user is not able to resend the code request
+          email
+  */
+
   useEffect(() => {
     const tokenFromUrl = searchParams.get("token");
     if (!tokenFromUrl) {

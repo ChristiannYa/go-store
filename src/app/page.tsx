@@ -20,7 +20,7 @@ export default function Home() {
       </header>
       <main className="flex flex-col justify-center items-center">
         {isLoading ? (
-          <p className="text-lg">Loading...</p>
+          <p>Loading...</p>
         ) : !user ? (
           <div className="text-lg text-center flex flex-col gap-y-2">
             <Link href="/register">
@@ -36,7 +36,7 @@ export default function Home() {
           </div>
         ) : (
           <Link href="/account">
-            <p className="text-slate-500 hover:text-blue-500 cursor-pointer">
+            <p className="text-slate-500 hover:text-blue-500 text-lg cursor-pointer">
               Account
             </p>
           </Link>
