@@ -44,11 +44,9 @@ class ApiClient {
       credentials: "include",
     });
 
-    /* 
-      When calling a method that requires authentication and the
-      token is expired, the server will return a 401 status code,
-      which will trigger the token refresh handler (only on first attempt)
-    */
+    /* When calling a method that requires authentication and the
+    token is expired, the server will return a 401 status code, which 
+    will trigger the token refresh handler (only on first attempt) */
     if (response.status === 401 && !isRetry && this.onTokenExpired) {
       try {
         // Refresh token
@@ -62,10 +60,8 @@ class ApiClient {
               "Content-Type": "application/json",
             },
           };
-          /*
-            This time, retry the same request with the new token, setting
-            isRetry to true to prevent an infinite loop.
-          */
+          /* This time, retry the same request with the new token, 
+          setting isRetry to true to prevent an infinite loop. */
           return this.makeRequest(endpoint, updatedOptions, true);
         }
       } catch (error) {

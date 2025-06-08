@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { ServerStatusContextType } from "@/app/definitions";
 import { ServerOfflinePage } from "@/components/ServerOfflinePage";
 import { ServerCheckingPage } from "@/components/ServerCheckingPage";
+import { apiTimeout } from "@/constants/apiCall";
 
 const ServerStatusContext = createContext<ServerStatusContextType | undefined>(
   undefined
@@ -33,7 +34,7 @@ export const ServerStatusProvider: React.FC<{ children: React.ReactNode }> = ({
         `${process.env.NEXT_PUBLIC_API_URL}/api/health`,
         {
           method: "GET",
-          signal: AbortSignal.timeout(5000),
+          signal: AbortSignal.timeout(apiTimeout),
         }
       );
       setIsServerOnline(response.ok);

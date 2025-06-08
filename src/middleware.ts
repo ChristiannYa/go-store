@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAuthentication } from "./lib/authVerification";
+import { apiTimeout } from "./constants/apiCall";
 
 const protectedRoutes = ["/account"];
 
@@ -20,7 +21,7 @@ async function isServerAvailable(): Promise<boolean> {
       `${process.env.NEXT_PUBLIC_API_URL}/api/health`,
       {
         method: "GET",
-        signal: AbortSignal.timeout(5000),
+        signal: AbortSignal.timeout(apiTimeout),
       }
     );
     return response.ok;
@@ -31,7 +32,9 @@ async function isServerAvailable(): Promise<boolean> {
 
 export default async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
-  const isProtectedRoute = protectedRoutes.includes(path);
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    path.startsWith(route)
+  );
   const isPublicRoute = publicRoutes.includes(path);
 
   // If server is down, let the client-side handle everything
@@ -42,7 +45,7 @@ export default async function middleware(req: NextRequest) {
 
   const { isAuthenticated } = await verifyAuthentication({
     cookies: req.cookies.toString(),
-    timeout: 5000,
+    timeout: apiTimeout,
   });
 
   if (isProtectedRoute && !isAuthenticated) {
