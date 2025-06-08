@@ -40,14 +40,10 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  const { isAuthenticated, error } = await verifyAuthentication({
+  const { isAuthenticated } = await verifyAuthentication({
     cookies: req.cookies.toString(),
     timeout: 5000,
   });
-
-  if (error) {
-    console.error("Middleware error:", error);
-  }
 
   if (isProtectedRoute && !isAuthenticated) {
     return NextResponse.redirect(new URL("/login", req.url));

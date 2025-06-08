@@ -68,6 +68,15 @@ export function UserProvider({ children }: UserProviderProps) {
     }
   }, [fetchUserData, isLoggingOut]);
 
+  // Clear user data immediately when logout starts
+  useEffect(() => {
+    if (isLoggingOut) {
+      setUser(null);
+      setUserError(null);
+      setUserIsLoading(false);
+    }
+  }, [isLoggingOut]);
+
   const value: UserContextType = {
     user,
     userIsLoading,

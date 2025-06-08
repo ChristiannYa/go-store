@@ -1,10 +1,14 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useAuthVerification } from "@/hooks/useAuthVerification";
+import { useUser } from "@/contexts/UserContext";
+import { useTokens } from "@/contexts/TokenContext";
 
 export default function Home() {
-  const { isLoading, isAuthenticated } = useAuthVerification();
+  const { user, userIsLoading } = useUser();
+  const { isTokenLoading } = useTokens();
+
+  const isLoading = isTokenLoading || userIsLoading;
 
   return (
     <div className="font-mono grid grid-rows-[auto_1fr_auto] items-center justify-items-center min-h-dvh gap-4 p-4">
@@ -17,7 +21,7 @@ export default function Home() {
       <main className="flex flex-col justify-center items-center">
         {isLoading ? (
           <p className="text-lg">Loading...</p>
-        ) : !isAuthenticated ? (
+        ) : !user ? (
           <div className="text-lg text-center flex flex-col gap-y-2">
             <Link href="/register">
               <p className="text-slate-500 hover:text-blue-500 cursor-pointer">
@@ -32,7 +36,9 @@ export default function Home() {
           </div>
         ) : (
           <Link href="/account">
-            <p className="link-slate-500">Account</p>
+            <p className="text-slate-500 hover:text-blue-500 cursor-pointer">
+              Account
+            </p>
           </Link>
         )}
       </main>

@@ -56,12 +56,7 @@ export interface TokenContextType {
 
 export interface AuthVerificationOptions {
   timeout?: number;
-  cookies?: string /* For route middleware */;
-}
-
-export interface AuthVerificationResponse {
-  isAuthenticated: boolean;
-  error?: string;
+  cookies: string;
 }
 
 export interface ResetPasswordFormProps {
