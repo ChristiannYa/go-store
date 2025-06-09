@@ -34,9 +34,8 @@ func (s *EmailVerificationService) GenerateVerificationCode(userID int) (string,
 		INSERT INTO email_verification_tokens (
 			user_id, 
 			verification_code, 
-			expires_at, 
-			attempts
-		) VALUES ($1, $2, $3, 0)
+			expires_at 
+		) VALUES ($1, $2, $3)
 	`
 
 	_, err := s.db.Exec(query, userID, code, expiresAt)
@@ -60,9 +59,9 @@ func (s *EmailVerificationService) VerifyCode(userID int, code string) error {
 		SELECT 
 			id, 
 			verification_code, 
-			expires_at, 
 			attempts, 
 			success,
+			expires_at, 
 			(expires_at < NOW()) as is_expired
 		FROM email_verification_tokens 
 		WHERE user_id = $1 
@@ -73,9 +72,9 @@ func (s *EmailVerificationService) VerifyCode(userID int, code string) error {
 	err := s.db.QueryRow(query, userID).Scan(
 		&recordID,
 		&storedCode,
-		&expiresAt,
 		&attempts,
 		&success,
+		&expiresAt,
 		&isExpired,
 	)
 	if err != nil {

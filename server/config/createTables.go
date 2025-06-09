@@ -45,8 +45,8 @@ func CreateTables() {
 				id SERIAL PRIMARY KEY,
 				user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 				token_hash VARCHAR(255) NOT NULL,
-				expires_at TIMESTAMP NOT NULL,
 				used BOOLEAN DEFAULT FALSE,
+				expires_at TIMESTAMP NOT NULL,
 				created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 			);
 		`,
@@ -55,9 +55,9 @@ func CreateTables() {
         id SERIAL PRIMARY KEY,
         user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
         verification_code VARCHAR(6) NOT NULL,
-        expires_at TIMESTAMP NOT NULL,
         attempts INTEGER DEFAULT 0,
         success BOOLEAN DEFAULT FALSE,
+        expires_at TIMESTAMP NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `,
