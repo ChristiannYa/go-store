@@ -134,6 +134,9 @@ export default function VerifyEmailPage() {
                   You can now edit the email address
                 </p>
               )}
+              {error && (
+                <p className="text-red-500 text-sm mt-1 text-center">{error}</p>
+              )}
             </div>
             <button
               type="submit"

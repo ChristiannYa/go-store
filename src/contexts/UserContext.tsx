@@ -8,24 +8,13 @@ import React, {
   ReactNode,
   useCallback,
 } from "react";
-import { User } from "@/app/definitions";
+import { User, UserContextType } from "@/app/definitions";
 import { useTokens } from "@/contexts/TokenContext";
 import { apiClient } from "@/lib/api";
 
-interface UserContextType {
-  user: User | null;
-  userIsLoading: boolean;
-  userError: string | null;
-  refreshUser: () => Promise<void>;
-}
-
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
-interface UserProviderProps {
-  children: ReactNode;
-}
-
-export function UserProvider({ children }: UserProviderProps) {
+export function UserProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [userIsLoading, setUserIsLoading] = useState(true);
   const [userError, setUserError] = useState<string | null>(null);

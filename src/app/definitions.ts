@@ -88,6 +88,12 @@ export type RequestData =
   | null
   | undefined;
 
+export interface EmailVerificationResponse {
+  success: boolean;
+  message: string;
+  errors?: Record<string, string>;
+}
+
 // ApiHeaders type that allows string indexing
 export interface ApiHeaders extends Record<string, string> {
   "Content-Type": string;
@@ -108,3 +114,10 @@ export type User = {
   email_verified: boolean;
   created_at: string;
 };
+
+export interface UserContextType {
+  user: User | null;
+  userIsLoading: boolean;
+  userError: string | null;
+  refreshUser: () => Promise<void>;
+}
