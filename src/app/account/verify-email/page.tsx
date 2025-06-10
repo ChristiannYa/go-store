@@ -90,7 +90,7 @@ export default function VerifyEmailPage() {
         </h1>
         {user?.email_verified === true && isEmailVerified === null ? (
           <div className="text-center opacity-95">
-            Your email address is already verified.
+            Your email address is already verified
           </div>
         ) : step === "email" ? (
           <form onSubmit={handleSendCode} className="space-y-4">

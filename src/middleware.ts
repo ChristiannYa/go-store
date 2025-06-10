@@ -14,38 +14,12 @@ const publicRoutes = [
   "/reset-password",
 ];
 
-/*
-  TODO: Remove server check
-*/
-
-// Check if server is available first
-async function isServerAvailable(): Promise<boolean> {
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/health`,
-      {
-        method: "GET",
-        signal: AbortSignal.timeout(apiTimeout),
-      }
-    );
-    return response.ok;
-  } catch {
-    return false;
-  }
-}
-
 export default async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
   const isProtectedRoute = protectedRoutes.some((route) =>
     path.startsWith(route)
   );
   const isPublicRoute = publicRoutes.includes(path);
-
-  // If server is down, let the client-side handle everything
-  const serverAvailable = await isServerAvailable();
-  if (!serverAvailable) {
-    return NextResponse.next();
-  }
 
   const { isAuthenticated } = await verifyAuthentication({
     cookies: req.cookies.toString(),
