@@ -34,7 +34,7 @@ func ResetPassword(w http.ResponseWriter, r *http.Request) {
 
 	resetService := services.NewPasswordResetService(config.DB)
 	userService := services.NewUserService(config.DB)
-	emailService := services.NewPswEmailService()
+	emailService := services.NewEmailService()
 
 	// Validate reset token
 	userID, err := resetService.ValidateResetToken(req.Token)

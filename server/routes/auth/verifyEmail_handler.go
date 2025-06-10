@@ -6,6 +6,7 @@ import (
 	"go-auth/server/models"
 	"go-auth/server/services"
 	"go-auth/server/utils"
+	"log"
 	"net/http"
 )
 
@@ -33,6 +34,7 @@ func VerifyEmail(w http.ResponseWriter, r *http.Request) {
 
 	userService := services.NewUserService(config.DB)
 	verificationService := services.NewEmailVerificationService(config.DB)
+	emailService := services.NewEmailService()
 
 	// Get user by email
 	user, err := userService.SelectUserLoginDetails(req.Email)
@@ -75,6 +77,14 @@ func VerifyEmail(w http.ResponseWriter, r *http.Request) {
 		)
 		return
 	}
+
+	// Send confirmation email
+	go func() {
+		if err := emailService.SendEmailVerificationSuccessEmail(user.Email); err != nil {
+			/* Just log the error, don't fail the request */
+			log.Printf("Failed to send email verification success email to %s: %v", user.Email, err)
+		}
+	}()
 
 	WriteSuccessResponse(
 		w,

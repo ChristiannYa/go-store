@@ -33,7 +33,7 @@ func SendVerificationCode(w http.ResponseWriter, r *http.Request) {
 
 	userService := services.NewUserService(config.DB)
 	verificationService := services.NewEmailVerificationService(config.DB)
-	emailService := services.NewPswEmailService()
+	emailService := services.NewEmailService()
 
 	// Get user by email
 	user, err := userService.SelectUserLoginDetails(req.Email)
