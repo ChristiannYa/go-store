@@ -3,9 +3,9 @@ package middleware
 import (
 	"context"
 	"encoding/json"
-	"go-auth/server/config"
-	"go-auth/server/models"
-	"go-auth/server/services"
+	"go-store/server/config"
+	"go-store/server/models"
+	"go-store/server/services"
 	"net/http"
 	"strings"
 )

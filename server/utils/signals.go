@@ -6,7 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"go-auth/server/config"
+	"go-store/server/config"
 )
 
 // SetupGracefulShutdown sets up signal handling for graceful shutdown

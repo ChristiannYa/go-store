@@ -4,7 +4,7 @@ import (
 	"crypto/rand"
 	"database/sql"
 	"fmt"
-	"go-auth/server/constants"
+	"go-store/server/constants"
 	"math/big"
 	"time"
 )

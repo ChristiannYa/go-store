@@ -1,9 +1,9 @@
 package auth
 
 import (
-	"go-auth/server/config"
-	"go-auth/server/constants"
-	"go-auth/server/services"
+	"go-store/server/config"
+	"go-store/server/constants"
+	"go-store/server/services"
 	"log"
 	"net/http"
 )

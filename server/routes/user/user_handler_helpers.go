@@ -2,7 +2,7 @@ package user
 
 import (
 	"encoding/json"
-	"go-auth/server/models"
+	"go-store/server/models"
 	"net/http"
 )
 

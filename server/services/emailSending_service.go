@@ -2,7 +2,7 @@ package services
 
 import (
 	"fmt"
-	"go-auth/server/constants"
+	"go-store/server/constants"
 	"os"
 	"time"
 )
@@ -21,7 +21,7 @@ This link will expire in %.0f minutes.
 If you didn't request this, please ignore this email.
 
 Best regards,
-Go-Auth Team
+go-store Team
 `, resetLink, constants.PasswordResetDuration.Minutes())
 
 	return e.sendEmail(to, subject, body)
@@ -40,7 +40,7 @@ For your security:
 - If this wasn't you, secure your account immediately
 
 Best regards,
-Go-Auth Team
+go-store Team
 `, time.Now().Format("01/02/2006 03:04:05 PM"))
 
 	return e.sendEmail(to, subject, body)
@@ -57,7 +57,7 @@ This code will expire in %.0f minutes.
 If you didn't create an account, please ignore this email.
 
 Best regards,
-Go-Auth Team
+go-store Team
 `, code, constants.EmailVerificationDuration.Minutes())
 
 	return e.sendEmail(to, subject, body)
@@ -76,7 +76,7 @@ For your security:
 - If this wasn't you, secure your account immediately
 
 Best regards,
-Go-Auth Team
+go-store Team
 `, to, time.Now().Format("01/02/2006 03:04:05 PM"))
 
 	return e.sendEmail(to, subject, body)

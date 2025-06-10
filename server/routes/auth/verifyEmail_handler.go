@@ -2,10 +2,10 @@ package auth
 
 import (
 	"encoding/json"
-	"go-auth/server/config"
-	"go-auth/server/models"
-	"go-auth/server/services"
-	"go-auth/server/utils"
+	"go-store/server/config"
+	"go-store/server/models"
+	"go-store/server/services"
+	"go-store/server/utils"
 	"log"
 	"net/http"
 )

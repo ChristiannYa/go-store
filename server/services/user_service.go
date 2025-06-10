@@ -3,7 +3,7 @@ package services
 import (
 	"database/sql"
 	"fmt"
-	"go-auth/server/models"
+	"go-store/server/models"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"

@@ -1,4 +1,4 @@
-module go-auth
+module go-store
 
 go 1.24.3
 
