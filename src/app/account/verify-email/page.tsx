@@ -13,8 +13,9 @@ export default function VerifyEmailPage() {
   const [verificationCode, setVerificationCode] = useState("");
   const [step, setStep] = useState<"email" | "code">("email");
   const [isEmailEditable, setIsEmailEditable] = useState(false);
+  const [isEmailVerified, setIsEmailVerified] = useState<null | boolean>(null);
 
-  const { user, userIsLoading, userError } = useUser();
+  const { user, userIsLoading, userError, refreshUser } = useUser();
 
   // Pre-populate email when user data loads
   useEffect(() => {
@@ -23,14 +24,7 @@ export default function VerifyEmailPage() {
     }
   }, [user, email]);
 
-  // Redirect if already verified
-  useEffect(() => {
-    if (user?.email_verified) {
-      window.location.href = "/account";
-    }
-  }, [user]);
-
-  const { sendVerificationCode, verifyEmail, isLoading, error, success } =
+  const { sendVerificationCode, verifyEmail, isLoading, error } =
     useEmailVerification();
 
   const handleSendCode = async (e: React.FormEvent) => {
@@ -40,6 +34,24 @@ export default function VerifyEmailPage() {
     const sent = await sendVerificationCode(email);
     if (sent) {
       setStep("code");
+      setIsEmailVerified(false);
+    }
+  };
+
+  const handleVerifyEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!verificationCode.trim()) return;
+
+    const verified = await verifyEmail(email, verificationCode);
+    if (verified) {
+      setIsEmailVerified(true);
+
+      // Refresh user data
+      try {
+        await refreshUser();
+      } catch (error) {
+        console.error("Failed to refresh user data:", error);
+      }
     }
   };
 
@@ -51,22 +63,10 @@ export default function VerifyEmailPage() {
     setIsEmailEditable(false);
   };
 
-  const handleVerifyEmail = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!verificationCode.trim()) return;
-
-    const verified = await verifyEmail(email, verificationCode);
-    if (verified) {
-      window.location.href = "/account";
-    }
-  };
-
   if (userIsLoading) {
-    return (
-      <div className="page">
-        <div className="text-amber-500">Loading user data...</div>
-      </div>
-    );
+    /* We could add a user loading state element here if 
+    needed but for now it is left empty for cleaner purposes */
+    return;
   }
 
   if (userError) {
@@ -88,7 +88,11 @@ export default function VerifyEmailPage() {
         <h1 className="text-2xl font-bold text-white mb-6 text-center">
           Email Verification
         </h1>
-        {step === "email" ? (
+        {user?.email_verified === true && isEmailVerified === null ? (
+          <div className="text-center opacity-95">
+            Your email address is already verified.
+          </div>
+        ) : step === "email" ? (
           <form onSubmit={handleSendCode} className="space-y-4">
             <div>
               <label className="block text-gray-300 text-sm font-medium mb-2">
@@ -100,10 +104,10 @@ export default function VerifyEmailPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   onBlur={handleEmailBlur}
-                  className={`bg-gray-700 rounded text-white placeholder-gray-400 focus:outline-none transition-colors w-full px-3 py-2 pr-10 ${
+                  className={`rounded text-white placeholder-gray-400 focus:outline-none transition-colors w-full px-3 py-2 pr-10 ${
                     isEmailEditable
-                      ? "focus:ring-1 focus:ring-blue-500"
-                      : "cursor-default"
+                      ? "bg-gray-700 focus:ring-1 focus:ring-blue-500"
+                      : "bg-transparent border border-gray-700/40 cursor-default"
                   }`}
                   placeholder="Enter your email"
                   required
@@ -140,53 +144,66 @@ export default function VerifyEmailPage() {
             </button>
           </form>
         ) : (
-          <form onSubmit={handleVerifyEmail} className="space-y-4">
-            <div>
-              <label className="block text-gray-300 text-sm font-medium mb-2">
-                Verification Code
-              </label>
-              <input
-                type="text"
-                value={verificationCode}
-                onChange={(e) => setVerificationCode(e.target.value)}
-                className="bg-gray-700 text-white placeholder-gray-400 text-center text-lg tracking-wide rounded focus:outline-none focus:ring-1 focus:ring-sky-500 w-full px-3 py-2"
-                placeholder="000000"
-                maxLength={6}
-                required
-              />
-              <p className="text-gray-400 text-sm mt-1">
-                Code sent to: {email}
-              </p>
-            </div>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-green-500 hover:bg-green-600 disabled:bg-green-500/50 text-white py-2 rounded font-medium transition-colors"
-            >
-              {isLoading ? "Verifying..." : "Verify Email"}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setStep("email");
-                setIsEmailEditable(false); // Reset edit state when going back
-              }}
-              className="w-full bg-gray-600 hover:bg-gray-700 text-white py-2 rounded font-medium transition-colors"
-            >
-              Change Email
-            </button>
-          </form>
-        )}
-        {/* Messages */}
-        {success && (
-          <div className="mt-4 p-3 bg-green-500/20 border border-green-500/30 rounded text-green-400 text-sm">
-            ✅ {success}
-          </div>
-        )}
-        {error && (
-          <div className="mt-4 p-3 bg-red-500/20 border border-red-500/30 rounded text-red-400 text-sm">
-            ❌ {error}
-          </div>
+          <>
+            {!isEmailVerified ? (
+              <form onSubmit={handleVerifyEmail} className="space-y-4">
+                <div>
+                  <label className="block text-gray-300 text-sm font-medium mb-2">
+                    Verification Code
+                  </label>
+                  <input
+                    type="text"
+                    value={verificationCode}
+                    onChange={(e) => setVerificationCode(e.target.value)}
+                    className="bg-gray-700 text-white placeholder-gray-400 text-center text-lg tracking-wide rounded focus:outline-none focus:ring-1 focus:ring-sky-500 w-full px-3 py-2"
+                    placeholder="000000"
+                    maxLength={6}
+                    required
+                  />
+                  <div>
+                    <p className="text-gray-400 text-sm text-center mt-1.5">
+                      Code sent to:
+                    </p>
+                    <p className="text-gray-300 text-center">{email}</p>
+                  </div>
+                </div>
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full bg-green-500 hover:bg-green-600 disabled:bg-green-500/50 text-white py-2 rounded font-medium transition-colors"
+                >
+                  {isLoading ? "Verifying..." : "Verify Email"}
+                </button>
+                {error && (
+                  <p className="text-red-500 text-sm text-center">{error}</p>
+                )}
+              </form>
+            ) : (
+              <div className="text-center space-y-4">
+                <div className="mx-auto w-16 h-16 bg-green-500 rounded-full flex items-center justify-center">
+                  <svg
+                    className="w-8 h-8 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </div>
+                <div className="text-green-500 space-y-2">
+                  <h2 className="text-xl font-semibold">Email Verified</h2>
+                  <p className="text-sm text-gray-300">
+                    You may now go to your account page.
+                  </p>
+                </div>
+              </div>
+            )}
+          </>
         )}
         <div className="flex flex-col justify-center items-center mt-2">
           <Link href="/account">

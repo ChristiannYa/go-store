@@ -40,6 +40,11 @@ export interface AuthVerificationHookResult {
   refetch: () => Promise<void>;
 }
 
+export interface AuthVerificationOptions {
+  timeout?: number;
+  cookies: string;
+}
+
 export type CookieAccessor = {
   get: (name: string) => { value: string } | undefined;
 };
@@ -54,11 +59,6 @@ export interface TokenContextType {
   refreshToken: () => Promise<string | null>;
   login: (token: string) => void;
   logout: () => Promise<void>;
-}
-
-export interface AuthVerificationOptions {
-  timeout?: number;
-  cookies: string;
 }
 
 export interface ResetPasswordFormProps {

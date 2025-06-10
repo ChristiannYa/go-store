@@ -43,12 +43,12 @@ export default function UserInfo() {
           <label className="font-[500]">Email verified</label>
           <div>
             {user.email_verified ? (
-              <p>✔️</p>
+              <p className="opacity-80">Yes</p>
             ) : (
               <div>
                 <Link href="/account/verify-email">
                   <p className="text-blue-500/80 hover:underline inline-block">
-                    Not verified
+                    No
                   </p>
                 </Link>
               </div>

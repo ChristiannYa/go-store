@@ -16,6 +16,7 @@ interface UserContextType {
   user: User | null;
   userIsLoading: boolean;
   userError: string | null;
+  refreshUser: () => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -83,10 +84,27 @@ export function UserProvider({ children }: UserProviderProps) {
     }
   }, [isLoggingOut, isLogoutSuccessful]);
 
+  // Manual user data refresh function
+  const refreshUser = useCallback(async () => {
+    if (!accessToken || isTokenLoading) {
+      return;
+    }
+
+    setUserIsLoading(true);
+
+    try {
+      await fetchUserData();
+    } catch (error) {
+      console.error("Failed to refresh user data:", error);
+      setUserError("Failed to refresh user data");
+    }
+  }, [fetchUserData, accessToken, isTokenLoading]);
+
   const value: UserContextType = {
     user,
     userIsLoading,
     userError,
+    refreshUser,
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

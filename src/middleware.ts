@@ -14,6 +14,10 @@ const publicRoutes = [
   "/reset-password",
 ];
 
+/*
+  TODO: Remove server check
+*/
+
 // Check if server is available first
 async function isServerAvailable(): Promise<boolean> {
   try {
