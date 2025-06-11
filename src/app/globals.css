@@ -31,12 +31,6 @@ body {
   @apply text-lg text-slate-500 hover:text-slate-300 cursor-pointer;
 }
 
-/* -- Sizes -- */
-.container-1200 {
-  margin-inline: auto;
-  width: min(96%, 1200px);
-}
-
 /* -- Form -- */
 .form {
   @apply w-[300px] space-y-3;

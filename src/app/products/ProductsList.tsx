@@ -26,7 +26,7 @@ export default function ProductsList() {
               <p>{product.description}</p>
               <div className="flex justify-between items-center mt-1">
                 <p className="text-lg">${product.price}</p>
-                <button className="bg-blue-600 hover:bg-blue-700 text-sm px-2 py-0.5">
+                <button className="bg-slate-300/10 hover:bg-blue-700 text-slate-300 text-sm px-2 py-0.5">
                   Add to cart
                 </button>
               </div>
