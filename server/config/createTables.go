@@ -10,6 +10,7 @@ const (
 	RefreshTokensTable           = "refresh_tokens"
 	PasswordResetTokensTable     = "password_reset_tokens"
 	EmailVerificationTokensTable = "email_verification_tokens"
+	ProductsTable                = "products"
 )
 
 // Table definition struct
@@ -76,6 +77,21 @@ func CreateTables() {
 					success BOOLEAN DEFAULT FALSE,
 					expires_at TIMESTAMP NOT NULL,
 					created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+				);
+			`,
+		},
+		{
+			Name: ProductsTable,
+			Query: `
+				CREATE TABLE IF NOT EXISTS %s (
+					id SERIAL PRIMARY KEY,
+					name VARCHAR(255) NOT NULL,
+					description TEXT,
+					price DECIMAL(10,2) NOT NULL,
+					stock_quantity INTEGER NOT NULL DEFAULT 0,
+					category VARCHAR(100) NOT NULL,
+					created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+					updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 				);
 			`,
 		},

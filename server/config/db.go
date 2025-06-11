@@ -52,6 +52,7 @@ func ConnectDB() {
 	connectToDatabase(config)
 	CreateTables()
 	CreateIndexes()
+	SeedTables()
 }
 
 // Ensures all required environment variables are set
