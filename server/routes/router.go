@@ -4,6 +4,7 @@ import (
 	"go-store/server/middleware"
 	"go-store/server/routes/api"
 	"go-store/server/routes/auth"
+	"go-store/server/routes/products"
 	"go-store/server/routes/user"
 	"net/http"
 )
@@ -12,6 +13,7 @@ func SetupRoutes(mux *http.ServeMux) {
 	SetupApiRoutes(mux)
 	SetupAuthRoutes(mux)
 	SetupUserRoutes(mux)
+	SetupProductsRoutes(mux)
 }
 
 func SetupApiRoutes(mux *http.ServeMux) {
@@ -32,4 +34,8 @@ func SetupAuthRoutes(mux *http.ServeMux) {
 
 func SetupUserRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/user/me", middleware.JSONHandler(middleware.AuthMiddleware(user.GetMe)))
+}
+
+func SetupProductsRoutes(mux *http.ServeMux) {
+	mux.HandleFunc("GET /api/products", middleware.JSONHandler(products.Products))
 }
