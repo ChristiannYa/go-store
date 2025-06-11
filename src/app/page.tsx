@@ -15,7 +15,7 @@ export default function Home() {
       <header>
         <h1 className="text-3xl">
           <span className="text-sky-400">Golang</span>{" "}
-          <span className="underline">Authentication!</span>
+          <span className="underline">Store!</span>
         </h1>
       </header>
       <main className="flex flex-col justify-center items-center">
