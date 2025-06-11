@@ -12,19 +12,19 @@ func SeedTables() {
 // Seed products table with initial fruit cup data
 func seedProducts() {
 	// Check if products already exist
-	var count int
-	countQuery := "SELECT COUNT(*) FROM products"
-	err := DB.QueryRow(countQuery).Scan(&count)
+	var productsCount int
+	countProductsQuery := "SELECT COUNT(*) FROM products"
+	err := DB.QueryRow(countProductsQuery).Scan(&productsCount)
 	if err != nil {
 		log.Fatalf("❌ Failed to check products count: %v", err)
 	}
 
 	// Skip seeding if products already exist
-	if count > 0 {
+	if productsCount > 0 {
 		return
 	}
 
-	insertQuery := `
+	insertProductsQuery := `
 		INSERT INTO products (name, description, price, stock_quantity, category) VALUES
 		('Tropical Paradise Cup', 'Fresh pineapple, mango, and coconut fruit cup', 8.99, 50, 'Tropical'),
 		('Island Breeze Cup', 'Papaya, guava, and star fruit with lime zest', 9.49, 45, 'Tropical'),
@@ -46,7 +46,7 @@ func seedProducts() {
 		('Spring Fresh Cup', 'Fresh apricots, plums, and early berries', 7.79, 45, 'Seasonal')
 	`
 
-	_, err = DB.Exec(insertQuery)
+	_, err = DB.Exec(insertProductsQuery)
 	if err != nil {
 		log.Fatalf("❌ Failed to seed products: %v", err)
 	}
