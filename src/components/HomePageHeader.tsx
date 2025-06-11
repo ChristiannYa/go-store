@@ -17,8 +17,8 @@ export default function HomePageHeader() {
           <span className="text-sky-400">Golang</span> <span>Store!</span>
         </h1>
         {isLoading ? (
-          // We could add a loading state here if needed, but the
-          // server checking page handles most of the loading state
+          /* We could add a loading state, but most of the
+          loading is handled by the server checking page */
           <></>
         ) : !user ? (
           <Link href="/login">

@@ -121,3 +121,13 @@ export interface UserContextType {
   userError: string | null;
   refreshUser: () => Promise<void>;
 }
+
+/* -- Product -- */
+export type Product = {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  stockQuantity: number;
+  category: string;
+};
