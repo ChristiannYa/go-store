@@ -1,6 +1,12 @@
 import { useProducts } from "@/hooks/useProducts";
 import { Product } from "../definitions";
 
+/*
+  TODO: cache the products in the browser
+  so that we don't have to fetch them on every page load
+  unless the products change
+*/
+
 export default function ProductsList() {
   const { products, loadingProducts, productsError } = useProducts();
 

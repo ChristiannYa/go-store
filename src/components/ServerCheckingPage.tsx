@@ -1,6 +1,6 @@
 export function ServerCheckingPage() {
   return (
-    <div className="page">
+    <div className="min-h-dvh flex flex-col items-center justify-center">
       <h1 className="text-3xl">
         <span className="text-sky-400">Golang</span>{" "}
         <span className="underline">Authentication!</span>

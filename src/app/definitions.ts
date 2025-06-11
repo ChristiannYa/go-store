@@ -131,3 +131,10 @@ export type Product = {
   stockQuantity: number;
   category: string;
 };
+
+export type CartItem = {
+  id: number;
+  quantity: number;
+  item: string;
+  price: number;
+};
