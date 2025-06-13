@@ -18,7 +18,7 @@ const CartItem = ({ item }: { item: CrtIt }) => {
       <div className="bg-gray-200/10 rounded-xs px-2.5 py-2 flex justify-between items-center max-sm:flex-col max-sm:items-start max-sm:gap-y-2">
         <div className="space-y-1">
           <div className="flex gap-x-1 items-center">
-            <h3 className="font-[500] text-gray-300">{item.item}</h3>
+            <h3 className="font-[500] text-gray-300">{item.name}</h3>
             <div className="flex items-center">
               <FontAwesomeIcon
                 icon={faXmark}

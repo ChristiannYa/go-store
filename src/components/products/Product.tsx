@@ -18,7 +18,7 @@ export default function Product({ product }: { product: Prd }) {
       dispatch(
         addItemToCart({
           id: product.id,
-          item: product.name,
+          name: product.name,
           price: product.price,
         })
       );

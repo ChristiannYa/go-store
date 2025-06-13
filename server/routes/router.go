@@ -5,6 +5,7 @@ import (
 	"go-store/routes/api"
 	"go-store/routes/auth"
 	"go-store/routes/products"
+	"go-store/routes/stripe"
 	"go-store/routes/user"
 	"net/http"
 )
@@ -12,6 +13,7 @@ import (
 func SetupRoutes(mux *http.ServeMux) {
 	SetupApiRoutes(mux)
 	SetupAuthRoutes(mux)
+	SetupStripeRoutes(mux)
 	SetupUserRoutes(mux)
 	SetupProductsRoutes(mux)
 }
@@ -30,6 +32,10 @@ func SetupAuthRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/auth/send-verification-code", middleware.JSONHandler(auth.SendVerificationCode))
 	mux.HandleFunc("POST /api/auth/verify-email", middleware.JSONHandler(auth.VerifyEmail))
 	mux.HandleFunc("POST /api/auth/verify", middleware.JSONHandler(auth.VerifyToken))
+}
+
+func SetupStripeRoutes(mux *http.ServeMux) {
+	mux.HandleFunc("POST /api/stripe/create-payment-intent", middleware.JSONHandler(stripe.CreatePaymentIntent))
 }
 
 func SetupUserRoutes(mux *http.ServeMux) {

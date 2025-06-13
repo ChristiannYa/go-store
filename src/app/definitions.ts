@@ -122,7 +122,7 @@ export interface UserContextType {
   refreshUser: () => Promise<void>;
 }
 
-/* -- Product -- */
+/* -- Product/Cart -- */
 export type Product = {
   id: number;
   name: string;
@@ -135,6 +135,6 @@ export type Product = {
 export type CartItem = {
   id: number;
   quantity: number;
-  item: string;
+  name: string;
   price: number;
 };

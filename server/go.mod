@@ -6,6 +6,8 @@ require golang.org/x/crypto v0.38.0
 
 require github.com/rs/cors v1.11.1
 
+require github.com/stripe/stripe-go/v82 v82.2.1 // indirect
+
 require (
 	github.com/gabriel-vasile/mimetype v1.4.8 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
