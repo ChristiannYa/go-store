@@ -35,13 +35,13 @@ const CartItem = ({ item }: { item: CrtIt }) => {
         <div className="flex items-center gap-x-3 max-md:mt-1">
           <div className="bg-white-fg/3 rounded-full p-1.5 flex gap-x-2.5 items-center">
             <button
-              className="hover:bg-white-fg/4 rounded-full cursor-pointer w-[1.625rem] h-[1.625rem] flex justify-center items-center"
+              className="hover:bg-white/10 rounded-full cursor-pointer w-[1.625rem] h-[1.625rem] flex justify-center items-center"
               onClick={() => dispatch(decrementQuantity(item.id))}
             >
               <FontAwesomeIcon icon={faMinus} className="text-white-fg/90" />
             </button>
             <button
-              className="hover:bg-black-fg/4 dark:hover:bg-white-fg/4 rounded-full cursor-pointer w-[1.625rem] h-[1.625rem] flex justify-center items-center"
+              className="hover:bg-white/10 rounded-full cursor-pointer w-[1.625rem] h-[1.625rem] flex justify-center items-center"
               onClick={() => dispatch(incrementQuantity(item.id))}
             >
               <FontAwesomeIcon icon={faPlus} className="text-white-fg/90" />
@@ -49,7 +49,7 @@ const CartItem = ({ item }: { item: CrtIt }) => {
           </div>
           <button
             onClick={() => dispatch(removeItemFromCart(item.id))}
-            className="hover:bg-white-fg/4 rounded-full cursor-pointer w-[1.625rem] h-[1.625rem] flex justify-center items-center"
+            className="hover:bg-white/10 rounded-full cursor-pointer w-[1.625rem] h-[1.625rem] flex justify-center items-center"
           >
             <FontAwesomeIcon icon={faXmark} className="text-white-fg/90" />
           </button>

@@ -3,7 +3,6 @@ package stripe
 import (
 	"encoding/json"
 	"go-store/models"
-	"log"
 	"math"
 	"net/http"
 
@@ -19,7 +18,6 @@ func CreatePaymentIntent(w http.ResponseWriter, r *http.Request) {
 			http.StatusBadRequest,
 			"Invalid JSON body",
 		)
-		log.Println(err)
 		return
 	}
 

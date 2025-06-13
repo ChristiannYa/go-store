@@ -7,6 +7,7 @@ import {
   clearCart,
   selectCartTabStatus,
 } from "@/lib/features/cart/cartSlice";
+import useHandleCheckout from "@/hooks/useHandleCheckout";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import CartItem from "./CartItem";
@@ -18,6 +19,13 @@ export default function Cart() {
   const cartItems = useAppSelector(selectCartItems);
   const cartTabStatus = useAppSelector(selectCartTabStatus);
   const { handleCartTabStatus } = useCartTab();
+
+  const {
+    handleCheckout,
+    isCheckoutLoading,
+    checkoutError,
+    resetCheckoutState,
+  } = useHandleCheckout();
 
   const noCartItems = cartItems.length === 0;
 
@@ -37,6 +45,15 @@ export default function Cart() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [handleCartTabStatus, cartTabStatus]);
+
+  useEffect(() => {
+    if (checkoutError) {
+      const timer = setTimeout(() => {
+        resetCheckoutState();
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [checkoutError, resetCheckoutState]);
 
   return (
     <>
@@ -83,12 +100,27 @@ export default function Cart() {
             Close
           </button>
           <button
-            className={`bg-neutral-100 hover:bg-neutral-300 text-black cursor-pointer text-black-fg w-full py-1`}
+            onClick={() => handleCheckout({ cartItems })}
+            disabled={isCheckoutLoading || noCartItems}
+            className={`bg-neutral-100 text-black text-black-fg w-full py-1 ${
+              isCheckoutLoading || noCartItems
+                ? "bg-opacity-20 cursor-default"
+                : "hover:bg-neutral-300"
+            }`}
           >
-            Checkout
+            {isCheckoutLoading ? "Loading..." : "Checkout"}
           </button>
         </div>
       </div>
+      {/* Popup for checkout error. It should appear once the 
+      cart is closed when there is an error because the cart tab
+      takes a lot of space of the page, leaving no space for the
+      error popup. */}
+      {checkoutError && (
+        <div className="bg-red-300 text-red-600 rounded-md w-[20rem] py-2 px-0.5 flex justify-center items-center fixed top-4 left-1/2 -translate-x-1/2 z-50">
+          <p className="font-poppins font-[500]">{checkoutError}</p>
+        </div>
+      )}
     </>
   );
 }
