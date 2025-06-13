@@ -1,9 +1,9 @@
 package user
 
 import (
-	"go-store/server/config"
-	"go-store/server/middleware"
-	"go-store/server/services"
+	"go-store/config"
+	"go-store/middleware"
+	"go-store/services"
 	"net/http"
 )
 

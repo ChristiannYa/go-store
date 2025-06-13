@@ -4,9 +4,9 @@ import (
 	"log"
 	"net/http"
 
-	"go-store/server/config"
-	"go-store/server/routes"
-	"go-store/server/utils"
+	"go-store/config"
+	"go-store/routes"
+	"go-store/utils"
 
 	"github.com/joho/godotenv"
 )

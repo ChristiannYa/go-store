@@ -1,11 +1,11 @@
 package routes
 
 import (
-	"go-store/server/middleware"
-	"go-store/server/routes/api"
-	"go-store/server/routes/auth"
-	"go-store/server/routes/products"
-	"go-store/server/routes/user"
+	"go-store/middleware"
+	"go-store/routes/api"
+	"go-store/routes/auth"
+	"go-store/routes/products"
+	"go-store/routes/user"
 	"net/http"
 )
 

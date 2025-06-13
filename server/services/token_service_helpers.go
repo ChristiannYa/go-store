@@ -4,7 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"go-store/server/models"
+	"go-store/models"
 	"log"
 	"os"
 

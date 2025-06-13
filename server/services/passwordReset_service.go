@@ -6,7 +6,7 @@ import (
 	"database/sql"
 	"encoding/hex"
 	"fmt"
-	"go-store/server/constants"
+	"go-store/constants"
 	"time"
 )
 

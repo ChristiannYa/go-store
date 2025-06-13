@@ -1,8 +1,8 @@
 package products
 
 import (
-	"go-store/server/config"
-	services "go-store/server/services/products"
+	"go-store/config"
+	services "go-store/services/products"
 	"net/http"
 )
 

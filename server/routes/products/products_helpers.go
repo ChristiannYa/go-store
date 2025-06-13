@@ -2,7 +2,7 @@ package products
 
 import (
 	"encoding/json"
-	"go-store/server/models"
+	"go-store/models"
 	"net/http"
 )
 

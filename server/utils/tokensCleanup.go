@@ -1,8 +1,8 @@
 package utils
 
 import (
-	"go-store/server/config"
-	"go-store/server/services"
+	"go-store/config"
+	"go-store/services"
 	"log"
 	"time"
 )

@@ -2,7 +2,7 @@ package services
 
 import (
 	"fmt"
-	"go-store/server/constants"
+	"go-store/constants"
 	"os"
 	"time"
 )

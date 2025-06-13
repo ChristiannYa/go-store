@@ -1,7 +1,7 @@
 package services
 
 import (
-	"go-store/server/models"
+	"go-store/models"
 )
 
 func (s *ProductsService) GetProducts() (
