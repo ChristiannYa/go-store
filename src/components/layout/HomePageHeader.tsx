@@ -1,14 +1,22 @@
+import Link from "next/link";
 import { useTokens } from "@/contexts/TokenContext";
 import { useUser } from "@/contexts/UserContext";
+import { useAppSelector, useCartTab } from "@/hooks/useRedux";
+import { selectCartItemsLength } from "@/lib/features/cart/cartSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRightToBracket, faUser } from "@fortawesome/free-solid-svg-icons";
-import Link from "next/link";
+import {
+  faRightToBracket,
+  faUser,
+  faBagShopping,
+} from "@fortawesome/free-solid-svg-icons";
 
 export default function HomePageHeader() {
   const { user, userIsLoading } = useUser();
   const { isTokenLoading } = useTokens();
-
   const isLoading = isTokenLoading || userIsLoading;
+
+  const { handleCartTabStatus } = useCartTab();
+  const cartItemsLength = useAppSelector(selectCartItemsLength);
 
   return (
     <header className="flex justify-center items-center">
@@ -37,6 +45,20 @@ export default function HomePageHeader() {
             />
           </Link>
         )}
+        <button
+          onClick={handleCartTabStatus}
+          className="bg-slate-500 rounded-full cursor-pointer w-[1.6rem] h-[1.6rem] flex justify-center items-center relative"
+        >
+          <FontAwesomeIcon
+            icon={faBagShopping}
+            width={12}
+            height={12}
+            className="text-white-fg dark:text-black-fg"
+          />
+          <span className="bg-blue-600 text-black-fg text-xs rounded-full w-[18px] h-[18px] flex items-center justify-center absolute -top-1.5 -right-1.5">
+            {cartItemsLength}
+          </span>
+        </button>
       </div>
     </header>
   );

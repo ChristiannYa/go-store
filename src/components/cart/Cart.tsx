@@ -78,12 +78,12 @@ export default function Cart() {
         <div className="font-dm-sans w-full flex gap-x-2">
           <button
             onClick={handleCartTabStatus}
-            className="bg-neutral-900/95 hover:bg-neutral-900/90 dark:bg-neutral-900 dark:hover:bg-[#1d1d1d] text-white-fg cursor-pointer w-full py-1"
+            className="bg-neutral-900 hover:bg-[#1d1d1d] text-white-fg cursor-pointer w-full py-1"
           >
             Close
           </button>
           <button
-            className={`bg-white-fg hover:bg-neutral-300 cursor-pointer text-black-fg w-full py-1`}
+            className={`bg-neutral-100 hover:bg-neutral-300 text-black cursor-pointer text-black-fg w-full py-1`}
           >
             Checkout
           </button>

@@ -91,7 +91,7 @@ func (s *EmailVerificationService) VerifyCode(userID int, code string) error {
 
 	// Check attempts limit
 	if attempts >= constants.EmailVerificationMaxAttempts {
-		return fmt.Errorf("maximum verification attempts exceeded")
+		return fmt.Errorf("maximum verification attempts exceeded. try again later")
 	}
 
 	// Check expiration

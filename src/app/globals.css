@@ -16,6 +16,10 @@
 }
 */
 
+:root:has(.no-doc-scroll) {
+  overflow: hidden;
+}
+
 /* -- UI -- */
 body {
   color: var(--foreground);

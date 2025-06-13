@@ -18,7 +18,7 @@ export default function MainLayout({
       <div
         className={`h-fit transition-all duration-500 ${
           cartTabStatus
-            ? "-translate-x-64 blur-xs no-doc-scroll pointer-events-none"
+            ? "-translate-x-64 blur-lg no-doc-scroll pointer-events-none"
             : "blur-none"
         }`}
       >
