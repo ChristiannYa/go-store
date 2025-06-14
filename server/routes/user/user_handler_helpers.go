@@ -14,7 +14,7 @@ func WriteMessageResponse(
 ) {
 	w.WriteHeader(statusCode)
 	json.NewEncoder(w).Encode(map[string]string{
-		"error": message,
+		"message": message,
 	})
 }
 

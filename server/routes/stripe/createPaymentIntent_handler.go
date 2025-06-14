@@ -31,23 +31,25 @@ func CreatePaymentIntent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Validate user data
+	if req.User.Email == "" || req.User.Name == "" {
+		WriteMessageResponse(
+			w,
+			http.StatusBadRequest,
+			"User email and name are required",
+		)
+		return
+	}
+
 	// Calculate total amount (convert dollars to cents)
-	// for security reasons
+	/* For security reasons dont't trust the client */
 	var totalAmount int64 = 0
 	for _, item := range req.CartItems {
-		if item.Quantity <= 0 {
+		if item.Quantity <= 0 || item.Price <= 0 {
 			WriteMessageResponse(
 				w,
 				http.StatusBadRequest,
-				"Item's quantity must be greater than 0",
-			)
-			return
-		}
-		if item.Price <= 0 {
-			WriteMessageResponse(
-				w,
-				http.StatusBadRequest,
-				"Item's price must be greater than 0",
+				"Item's quantity and price must be greater than 0",
 			)
 			return
 		}
@@ -67,6 +69,7 @@ func CreatePaymentIntent(w http.ResponseWriter, r *http.Request) {
 		totalAmount,
 		currency,
 		req.CartItems,
+		req.User,
 	)
 	if err != nil {
 		WriteMessageResponse(

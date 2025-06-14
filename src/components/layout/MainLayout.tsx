@@ -24,7 +24,7 @@ export default function MainLayout({
               : "blur-none"
           }`}
         >
-          <div className="min-h-dvh py-3 grid grid-rows-[auto_1fr_auto]">
+          <div className="font-mono min-h-dvh py-3 grid grid-rows-[auto_1fr_auto]">
             <HomePageHeader />
             <main className="h-full">{children}</main>
             <HomePageFooter />

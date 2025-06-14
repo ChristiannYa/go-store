@@ -8,8 +8,14 @@ type CartItem struct {
 	Price    float64 `json:"price"`
 }
 
+type StripeUser struct {
+	Name  string `json:"name"`
+	Email string `json:"email"`
+}
+
 type CreatePaymentIntentRequest struct {
 	CartItems []CartItem `json:"cart_items"`
+	User      StripeUser `json:"user"`
 }
 
 type PaymentIntentResponse struct {

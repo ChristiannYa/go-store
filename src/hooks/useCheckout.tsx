@@ -38,6 +38,10 @@ export default function useCheckout() {
         "/api/stripe/create-payment-intent",
         {
           cart_items: cartItems,
+          user: {
+            email: user.email,
+            name: `${user.name} ${user.last_name}`,
+          },
         }
       );
 

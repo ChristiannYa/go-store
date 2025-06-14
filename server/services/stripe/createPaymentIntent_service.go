@@ -13,22 +13,28 @@ func (s *StripeService) CreatePaymentIntent(
 	amount int64,
 	currency string,
 	cartItems []models.CartItem,
+	user models.StripeUser,
 ) (*stripe.PaymentIntent, error) {
+	customerParams := &stripe.CustomerCreateParams{
+		Email: stripe.String(user.Email),
+		Name:  stripe.String(user.Name),
+	}
+
+	stripeCustomer, err := s.client.V1Customers.Create(ctx, customerParams)
+	if err != nil {
+		return nil, err
+	}
+
 	// Create metadata for cart items
 	metadata := make(map[string]string)
 
 	// Add cart summary to metadata
 	for i, item := range cartItems {
-		prefix := "item_" + strconv.Itoa(i) + "_"
+		prefix := "item_" + strconv.Itoa(i+1) + "_"
 		metadata[prefix+"name"] = item.Name
 		metadata[prefix+"quantity"] = strconv.Itoa(item.Quantity)
 		metadata[prefix+"price"] = strconv.FormatFloat(item.Price, 'f', 2, 64)
-	} /* This does the following:
-	item_0_name: "Wireless Headphones"
-	item_0_quantity: "2"
-	item_1_name: "Phone Case"
-	item_1_quantity: "1"
-	*/
+	}
 
 	// Add total items count
 	metadata["total_items"] = strconv.Itoa(len(cartItems))
@@ -36,6 +42,7 @@ func (s *StripeService) CreatePaymentIntent(
 	params := &stripe.PaymentIntentCreateParams{
 		Amount:   stripe.Int64(amount),
 		Currency: stripe.String(currency),
+		Customer: stripe.String(stripeCustomer.ID),
 		AutomaticPaymentMethods: &stripe.PaymentIntentCreateAutomaticPaymentMethodsParams{
 			Enabled: stripe.Bool(true),
 		},
