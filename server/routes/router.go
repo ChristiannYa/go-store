@@ -35,11 +35,15 @@ func SetupAuthRoutes(mux *http.ServeMux) {
 }
 
 func SetupStripeRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("POST /api/stripe/create-payment-intent", middleware.JSONHandler(stripe.CreatePaymentIntent))
+	mux.HandleFunc("POST /api/stripe/create-payment-intent", middleware.JSONHandler(
+		middleware.AuthMiddleware(stripe.CreatePaymentIntent),
+	))
 }
 
 func SetupUserRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("GET /api/user/me", middleware.JSONHandler(middleware.AuthMiddleware(user.GetMe)))
+	mux.HandleFunc("GET /api/user/me", middleware.JSONHandler(
+		middleware.AuthMiddleware(user.GetMe),
+	))
 }
 
 func SetupProductsRoutes(mux *http.ServeMux) {

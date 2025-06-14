@@ -7,7 +7,7 @@ import {
   clearCart,
   selectCartTabStatus,
 } from "@/lib/features/cart/cartSlice";
-import useHandleCheckout from "@/hooks/useHandleCheckout";
+import useCheckout from "@/hooks/useCheckout";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import CartItem from "./CartItem";
@@ -25,7 +25,7 @@ export default function Cart() {
     isCheckoutLoading,
     checkoutError,
     resetCheckoutState,
-  } = useHandleCheckout();
+  } = useCheckout();
 
   const noCartItems = cartItems.length === 0;
 

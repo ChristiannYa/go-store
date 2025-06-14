@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { ForgotPasswordFormProps } from "../definitions";
 import { apiClient } from "@/lib/api";
+import { ForgotPasswordFormProps } from "@/app/definitions";
 
 export default function ForgotPasswordForm({
   isLoading,
