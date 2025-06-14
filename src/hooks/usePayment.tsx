@@ -5,7 +5,7 @@ import { usePaymentContext } from "@/contexts/PaymentContext";
 import { useCartTab } from "@/hooks/useRedux";
 import { CartItem } from "@/app/definitions";
 
-export default function useCheckout() {
+export default function usePayment() {
   const { handleCartTabStatus } = useCartTab();
   const router = useRouter();
   const { user } = useUser();
@@ -69,7 +69,7 @@ export default function useCheckout() {
     }
   };
 
-  const resetCheckoutState = () => {
+  const resetPaymentState = () => {
     setPaymentError(null);
   };
 
@@ -77,6 +77,6 @@ export default function useCheckout() {
     handlePayment,
     isPaymentLoading,
     paymentError,
-    resetCheckoutState,
+    resetPaymentState,
   };
 }

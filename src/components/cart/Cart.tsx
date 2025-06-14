@@ -7,7 +7,7 @@ import {
   clearCart,
   selectCartTabStatus,
 } from "@/lib/features/cart/cartSlice";
-import useCheckout from "@/hooks/useCheckout";
+import usePayment from "@/hooks/usePayment";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import CartItem from "./CartItem";
@@ -20,8 +20,8 @@ export default function Cart() {
   const cartTabStatus = useAppSelector(selectCartTabStatus);
   const { handleCartTabStatus } = useCartTab();
 
-  const { handlePayment, isPaymentLoading, paymentError, resetCheckoutState } =
-    useCheckout();
+  const { handlePayment, isPaymentLoading, paymentError, resetPaymentState } =
+    usePayment();
 
   const noCartItems = cartItems.length === 0;
 
@@ -45,11 +45,11 @@ export default function Cart() {
   useEffect(() => {
     if (paymentError) {
       const timer = setTimeout(() => {
-        resetCheckoutState();
+        resetPaymentState();
       }, 5000);
       return () => clearTimeout(timer);
     }
-  }, [paymentError, resetCheckoutState]);
+  }, [paymentError, resetPaymentState]);
 
   return (
     <>
@@ -104,7 +104,7 @@ export default function Cart() {
                 : "hover:bg-neutral-300"
             }`}
           >
-            {isPaymentLoading ? "Loading..." : "Checkout"}
+            {isPaymentLoading ? "Loading..." : "Go to Checkout"}
           </button>
         </div>
       </div>

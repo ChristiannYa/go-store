@@ -4,6 +4,7 @@ import { Elements } from "@stripe/react-stripe-js";
 import { usePaymentContext } from "@/contexts/PaymentContext";
 import getStripe from "@/lib/stripe";
 import PaymentForm from "./PaymentForm";
+import HomeButton from "@/components/HomeButton";
 
 export default function CheckoutPage() {
   const { paymentIntentData } = usePaymentContext();
@@ -12,9 +13,9 @@ export default function CheckoutPage() {
     return (
       <div className="page min-h-screen">
         <div className="border border-white text-center rounded-lg p-4">
-          <h1>No payment intent data found</h1>
-          <p>Please go back to your cart and try again.</p>
+          <h1>No payment data found</h1>
         </div>
+        <HomeButton />
       </div>
     );
   }
@@ -47,6 +48,9 @@ export default function CheckoutPage() {
         >
           <PaymentForm />
         </Elements>
+        <div className="flex justify-start">
+          <HomeButton />
+        </div>
       </div>
     </div>
   );
